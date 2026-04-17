@@ -4,6 +4,8 @@ import VerificationForm from '../components/VerificationForm';
 import ScamTicker from '../components/ScamTicker';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import Chatbot from './chatbot';
+import Footer from '../components/Footer';
 
 export default function Home() {
   const { theme, setTheme } = useTheme();
@@ -130,6 +132,23 @@ export default function Home() {
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-400 blur-[120px] rounded-full"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400 blur-[120px] rounded-full"></div>
       </div>
+      {/* Decorative background element... */}
+      <div className="fixed top-0 left-1/2...">
+         {/* ... */}
+      </div>
+
+      {/* ADD THIS LINE RIGHT HERE */}
+      <Chatbot />
+{/* Decorative background element... */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30 dark:opacity-20 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-400 blur-[120px] rounded-full"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400 blur-[120px] rounded-full"></div>
+      </div>
+
+      {/* NEW FOOTER HERE */}
+      <Footer />
+
     </main>
   );
 }
+    
