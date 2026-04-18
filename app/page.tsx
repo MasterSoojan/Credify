@@ -8,44 +8,50 @@ import Chatbot from './chatbot';
 import Footer from '../components/Footer';
 
 export default function Home() {
+  
+  const [emailQuery, setEmailQuery] = useState('');
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<any>(null);
+
+  // ... rest of your code
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   
   // States for the Login/Signup Pop-Up
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  
+  const handleScan = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevents the page from refreshing
+    if (!emailQuery) return;
+
+    setIsScanning(true);
+    setScanResult(null); // Clear any old results
+
+    try {
+      const response = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailQuery }),
+      });
+
+      const data = await response.json();
+      setScanResult(data); // Save the database response to state!
+      
+    } catch (error) {
+      console.error("Scanning failed", error);
+    } finally {
+      setIsScanning(false);
+    }
+  };
 
   // Prevents hydration flicker
   useEffect(() => setMounted(true), []);
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans transition-colors duration-300 relative">
+    <main className="min-h-screen bg-background text-foreground font-sans transition-colors duration-300 relative">
       
-      {/* --- NAVIGATION BAR --- */}
-      <nav className="w-full bg-[var(--background)] border-b border-slate-200 dark:border-slate-800 py-4 shadow-sm transition-colors duration-300 relative z-20">
-        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-          <h1 className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">Credify.</h1>
-          
-          <div className="flex items-center gap-4">
-            {/* Dark Mode Toggle */}
-            {mounted && (
-              <button 
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-              >
-                {theme === 'dark' ? '☀️' : '🌙'}
-              </button>
-            )}
-
-            <button 
-              onClick={() => setShowAuthModal(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-full text-sm font-bold transition-all shadow-md active:scale-95"
-            >
-              Login / Sign Up
-            </button>
-          </div>
-        </div>
-      </nav>
+     
 
       {/* --- FEATURE #4: LIVE THREAT TICKER --- */}
       <ScamTicker />
@@ -58,7 +64,7 @@ export default function Home() {
         
         <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-[1.1] transition-colors duration-300">
           Shielding your <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500 dark:from-indigo-400 dark:to-blue-300">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-blue-500 dark:from-indigo-400 dark:to-blue-300">
             Professional Future.
           </span>
         </h2>
@@ -74,7 +80,7 @@ export default function Home() {
       {/* --- AUTHENTICATION MODAL --- */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-[var(--background)] w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 relative text-[var(--foreground)]">
+          <div className="bg-background w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 relative text-foreground">
             
             <button 
               onClick={() => setShowAuthModal(false)}
@@ -144,9 +150,9 @@ export default function Home() {
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-400 blur-[120px] rounded-full"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400 blur-[120px] rounded-full"></div>
       </div>
+      
 
-      {/* NEW FOOTER HERE */}
-      <Footer />
+      
 
     </main>
   );
