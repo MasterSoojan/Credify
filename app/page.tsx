@@ -8,42 +8,12 @@ import Chatbot from './chatbot';
 import Footer from '../components/Footer';
 
 export default function Home() {
-  
-  const [emailQuery, setEmailQuery] = useState('');
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanResult, setScanResult] = useState<any>(null);
-
-  // ... rest of your code
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   
   // States for the Login/Signup Pop-Up
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
-  
-  const handleScan = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents the page from refreshing
-    if (!emailQuery) return;
-
-    setIsScanning(true);
-    setScanResult(null); // Clear any old results
-
-    try {
-      const response = await fetch('/api/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailQuery }),
-      });
-
-      const data = await response.json();
-      setScanResult(data); // Save the database response to state!
-      
-    } catch (error) {
-      console.error("Scanning failed", error);
-    } finally {
-      setIsScanning(false);
-    }
-  };
 
   // Prevents hydration flicker
   useEffect(() => setMounted(true), []);
@@ -51,8 +21,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground font-sans transition-colors duration-300 relative">
       
-     
-
       {/* --- FEATURE #4: LIVE THREAT TICKER --- */}
       <ScamTicker />
 
@@ -138,23 +106,8 @@ export default function Home() {
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-400 blur-[120px] rounded-full"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400 blur-[120px] rounded-full"></div>
       </div>
-      {/* Decorative background element... */}
-      <div className="fixed top-0 left-1/2...">
-         {/* ... */}
-      </div>
-
-      {/* ADD THIS LINE RIGHT HERE */}
+      
       <Chatbot />
-{/* Decorative background element... */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-30 dark:opacity-20 pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-400 blur-[120px] rounded-full"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400 blur-[120px] rounded-full"></div>
-      </div>
-      
-
-      
-
     </main>
   );
 }
-    

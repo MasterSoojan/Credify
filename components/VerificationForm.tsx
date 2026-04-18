@@ -10,7 +10,7 @@ export default function VerificationForm() {
   const [email, setEmail] = useState('');
   const [letterText, setLetterText] = useState('');
   
-  // New States for File Upload
+  // States for File Upload
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,7 +34,7 @@ export default function VerificationForm() {
     setLoading(true);
     setResult(null);
 
-    // If a file is attached, we simulate a 3-second delay for "OCR"
+    // If a file is attached, we simulate a 2-second delay for "OCR"
     await new Promise(r => setTimeout(r, 2000));
 
     try {
@@ -45,13 +45,25 @@ export default function VerificationForm() {
             type: scanType, 
             email: email,
             letterText: letterText,
-            fileName: file?.name // Sending filename to the brain
+            fileName: file?.name 
         }),
       });
+
+      // --- NEW ROBUST ERROR HANDLING ---
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("🚨 BACKEND CRASHED! Reason:", errorText);
+        alert("Backend Error: " + errorText);
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
       setResult(data);
+      
     } catch (error) {
-      console.error("Scan failed");
+      console.error("🚨 FRONTEND ERROR:", error);
+      alert("Frontend caught an error! Check your VS Code Terminal.");
     } finally {
       setLoading(false);
     }
@@ -113,7 +125,13 @@ export default function VerificationForm() {
             <h4 className="text-lg font-bold text-slate-900 dark:text-white">TrustScore: {result.trustScore}/100</h4>
             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${result.trustScore > 80 ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>{result.status}</span>
           </div>
-          <p className="text-sm opacity-80 leading-relaxed text-slate-700 dark:text-slate-300">{result.message}</p>
+          
+          {/* Tweaked this to display the Supabase domain/verification message clearly */}
+          <p className="text-sm opacity-80 leading-relaxed text-slate-700 dark:text-slate-300">
+            {result.isVerified 
+              ? `Target Domain (${result.domain}) is an officially registered and verified employer on the Credify network. Safe to proceed.` 
+              : `Target Domain (${result.domain || 'Unknown'}) is NOT registered in the verified employer database. High risk of impersonation.`}
+          </p>
         </div>
       )}
     </div>

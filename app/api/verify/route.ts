@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase'; // Import your database connection
+import { supabase } from '../../../lib/supabase'; 
 
 export async function POST(request: Request) {
   try {
@@ -10,11 +10,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // Extract domain from email
-    const domain = email.split('@')[1].toLowerCase();
+    const domain = email.split('@')[1]?.toLowerCase();
 
-    // WARNING LOGIC: Catch free email providers immediately
-    if (['gmail.com', 'yahoo.com', 'hotmail.com'].includes(domain)) {
+    if (!domain) {
+      return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
+    }
+
+    if (['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'].includes(domain)) {
       return NextResponse.json({
         success: true,
         emailScanned: email,
@@ -25,22 +27,20 @@ export async function POST(request: Request) {
       });
     }
 
-    // DATABASE QUERY: Check if the domain exists in your Supabase table
     const { data: company, error } = await supabase
       .from('verified_companies')
       .select('*')
       .eq('domain', domain)
-      .single(); // We only expect one match
+      .single(); 
 
+    // 🚨 WE CHANGED THIS: Now it sends the exact Supabase error to your popup!
     if (error && error.code !== 'PGRST116') {
-      // PGRST116 just means no rows found, which is fine. Other errors are bad.
-      console.error('Supabase error:', error);
-      throw new Error('Database query failed');
+      return NextResponse.json({ 
+        error: `Supabase Database Error: ${error.message} (Code: ${error.code})` 
+      }, { status: 500 });
     }
 
-    // RESULT GENERATION
     if (company) {
-      // It's a match in the database!
       return NextResponse.json({
         success: true,
         emailScanned: email,
@@ -52,7 +52,6 @@ export async function POST(request: Request) {
         verifiedAt: company.verified_at
       });
     } else {
-      // Not in database, but not a public email either
       return NextResponse.json({
         success: true,
         emailScanned: email,
@@ -63,8 +62,10 @@ export async function POST(request: Request) {
       });
     }
 
-  } catch (error) {
-    console.error('API Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    // 🚨 WE CHANGED THIS: Catches network timeouts or bad keys
+    return NextResponse.json({ 
+      error: `Connection Crash: ${error.message}` 
+    }, { status: 500 });
   }
 }
