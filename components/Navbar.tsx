@@ -10,7 +10,8 @@ import {
   Shield, 
   Building, 
   Server, 
-  Activity 
+  Activity,
+  Smartphone // <-- Added this icon for your app!
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -31,7 +32,7 @@ export default function Navbar() {
         {/* Center: Desktop Navigation */}
         <div className="hidden md:flex items-center gap-10 h-full">
           
-          {/* Products Dropdown - The Magic is Here */}
+          {/* Products Dropdown */}
           <div className="relative group h-full flex items-center cursor-pointer">
             <div className="flex items-center gap-1 text-sm font-semibold text-white transition-colors">
               Products 
@@ -62,7 +63,8 @@ export default function Navbar() {
                   </div>
                 </Link>
 
-<Link href="/search" className="flex items-start gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors group/item">                  <div className="bg-white/5 p-2 rounded-lg text-slate-400 group-hover/item:text-cyan-400 transition-colors">
+                <Link href="/search" className="flex items-start gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors group/item">
+                  <div className="bg-white/5 p-2 rounded-lg text-slate-400 group-hover/item:text-cyan-400 transition-colors">
                     <Building size={18} />
                   </div>
                   <div>
@@ -80,8 +82,6 @@ export default function Navbar() {
                     <div className="text-xs text-slate-400">B2B platform integration</div>
                   </div>
                 </Link>
-
-                
 
                 {/* Status Footer */}
                 <div className="mt-2 pt-3 border-t border-white/5 px-3 pb-2 flex items-center gap-2 text-[10px] text-slate-500 font-mono uppercase tracking-wider">
@@ -109,18 +109,24 @@ export default function Navbar() {
             Support
           </Link>
 
-          
+          {/* ⭐ YOUR NEW DESKTOP APP DOWNLOAD BUTTON ⭐ */}
+          <a 
+            href="/GuardianDialer.apk" 
+            download="GuardianDialer_v1.apk"
+            className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300 transition-all text-sm font-bold"
+          >
+            <Smartphone size={16} />
+            Get App
+          </a>
 
-          <button className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-900/50 hover:border-cyan-400/50 transition-all text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.15)]">
-            <Link href="/for-employers" className="hidden lg:block text-sm font-semibold text-slate-400 hover:text-white transition-colors mr-2">
+          {/* Cleaned up For Employers Link */}
+          <Link href="/for-employers" className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-900/50 hover:border-cyan-400/50 transition-all text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.15)]">
             For Employers
-          </Link>
-          <span className="relative flex h-2 w-2">
+            <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
             </span>
-            <link href="/for-employers"></link>
-          </button>
+          </Link>
 
           {/* Mobile Menu Toggle */}
           <button 
@@ -132,12 +138,28 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Content (Simplified) */}
+      {/* Mobile Menu Content */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-white/5 bg-slate-900 px-6 py-4 flex flex-col gap-4">
+        <div className="md:hidden border-t border-white/5 bg-slate-900 px-6 py-4 flex flex-col gap-4 shadow-2xl">
           <Link href="#scanner" className="text-sm font-semibold text-slate-300">Job Scanner</Link>
           <Link href="#intelligence" className="text-sm font-semibold text-slate-300">Intelligence</Link>
           <Link href="#demo" className="text-sm font-semibold text-slate-300">Live Demo</Link>
+          
+          {/* ⭐ YOUR NEW MOBILE APP DOWNLOAD BUTTON ⭐ */}
+          <div className="mt-2 pt-4 border-t border-white/10">
+            <a 
+              href="/GuardianDialer.apk" 
+              download="GuardianDialer_v1.apk"
+              className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all text-sm font-bold shadow-lg"
+            >
+              <Smartphone size={18} />
+              Download Android App
+            </a>
+            <p className="text-[10px] text-slate-500 text-center mt-2">
+              *Requires "Install from Unknown Sources"
+            </p>
+          </div>
+
         </div>
       )}
     </nav>
