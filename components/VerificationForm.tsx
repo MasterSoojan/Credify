@@ -3,39 +3,61 @@
 import { useState, useEffect, useRef } from 'react';
 
 export default function VerificationForm() {
+  // Main states for managing scan process and results
   const [scanType, setScanType] = useState<'email' | 'letter'>('email');
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [scanStep, setScanStep] = useState(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [result, setResult] = useState<{ trustScore: number; status: string; isVerified: boolean; domain?: string; companyName?: string; aiSummary?: string } | null>(null);
+  const [scanStep, setScanStep] = useState<number>(0);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  
+  // Input states for form fields
   const [email, setEmail] = useState('');
   const [letterText, setLetterText] = useState('');
   
-  // States for File Upload
+  // States for handling File Uploads when scanning 'letter'
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Predefined forensic steps shown to the user during the scan animation
   const forensicSteps = scanType === 'email' 
     ? ["Initializing Deep Scan...", "Checking MX Records...", "Verifying Domain Age...", "Searching Blacklists...", "Analysis Complete."]
     : ["Extracting Metadata...", "Scanning for Digital Alterations...", "Analyzing Signature Authenticity...", "Checking Template Patterns...", "Analysis Complete."];
 
+  // Effect to handle the loading animation sequence
   useEffect(() => {
-    let interval: any;
+    let interval: NodeJS.Timeout;
     if (loading) {
-      setScanStep(0);
+      // Cycle through forensicSteps array every 400ms
       interval = setInterval(() => {
         setScanStep((prev) => (prev < forensicSteps.length - 1 ? prev + 1 : prev));
       }, 400); 
     }
     return () => clearInterval(interval);
-  }, [loading, scanType]);
+  }, [loading, forensicSteps.length]); // Added forensicSteps.length as dependency
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setResult(null);
+    setLoading(true); // Start loading animation
+    setResult(null);  // Clear previous results
+    setErrorMessage(''); // Clear previous errors
 
-    // If a file is attached, we simulate a 2-second delay for "OCR"
+    // If a file is attached, we simulate a 2-second delay for "OCR processing"
+    // This provides a better UX showing that analysis is actually taking place
     await new Promise(r => setTimeout(r, 2000));
+
+    // NEW: Handle file reading for real PDF scanning
+    let fileBase64 = "";
+    let mimeType = "";
+    if (file) {
+      mimeType = file.type;
+      const reader = new FileReader();
+      const filePromise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = reject;
+      });
+      reader.readAsDataURL(file);
+      fileBase64 = await filePromise;
+    }
 
     try {
       const response = await fetch('/api/verify', {
@@ -43,17 +65,26 @@ export default function VerificationForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
             type: scanType, 
-            email: email,
+            email: scanType === 'email' ? email.trim() : "", // Fix: Don't send stale email in letter scans
             letterText: letterText,
-            fileName: file?.name 
+            fileName: file?.name || "document",
+            fileData: fileBase64,
+            mimeType: mimeType
         }),
       });
 
-      // --- NEW ROBUST ERROR HANDLING ---
+      // --- SECURE ERROR HANDLING ---
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("🚨 BACKEND CRASHED! Reason:", errorText);
-        alert("Backend Error: " + errorText);
+        let errorMessage = "An unknown error occurred.";
+        try {
+          // Try to parse the JSON error returned by our new secure API endpoints
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          // Fallback if the response isn't valid JSON
+        }
+        console.error("🚨 Backend Error:", errorMessage);
+        setErrorMessage(errorMessage); 
         setLoading(false);
         return;
       }
@@ -63,7 +94,7 @@ export default function VerificationForm() {
       
     } catch (error) {
       console.error("🚨 FRONTEND ERROR:", error);
-      alert("Frontend caught an error! Check your VS Code Terminal.");
+      setErrorMessage("Frontend connection error. Check your connection.");
     } finally {
       setLoading(false);
     }
@@ -74,8 +105,8 @@ export default function VerificationForm() {
       
       {/* TABS */}
       <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-8">
-        <button onClick={() => { setScanType('email'); setResult(null); }} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${scanType === 'email' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}>📧 Email Scan</button>
-        <button onClick={() => { setScanType('letter'); setResult(null); }} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${scanType === 'letter' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}>📄 Letter/PDF Scan</button>
+        <button onClick={() => { setScanType('email'); setResult(null); setFile(null); setLetterText(''); }} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${scanType === 'email' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}>📧 Email Scan</button>
+        <button onClick={() => { setScanType('letter'); setResult(null); setEmail(''); }} className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${scanType === 'letter' ? 'bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-400' : 'text-slate-500'}`}>📄 Letter/PDF Scan</button>
       </div>
 
       <form onSubmit={handleScan} className="flex flex-col gap-5 text-left">
@@ -116,6 +147,16 @@ export default function VerificationForm() {
             </div>
           ) : `Start Forensic Scan`}
         </button>
+
+        {/* Error UI Block */}
+        {errorMessage && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl text-red-600 dark:text-red-400 text-sm font-medium animate-in slide-in-from-top-2">
+            <div className="flex items-center gap-2">
+              <span className="text-base">⚠️</span>
+              {errorMessage}
+            </div>
+          </div>
+        )}
       </form>
 
       {/* Results Section */}
@@ -129,9 +170,21 @@ export default function VerificationForm() {
           {/* Tweaked this to display the Supabase domain/verification message clearly */}
           <p className="text-sm opacity-80 leading-relaxed text-slate-700 dark:text-slate-300">
             {result.isVerified 
-              ? `Target Domain (${result.domain}) is an officially registered and verified employer on the Credify network. Safe to proceed.` 
-              : `Target Domain (${result.domain || 'Unknown'}) is NOT registered in the verified employer database. High risk of impersonation.`}
+              ? `Verification Successful: The sender (${result.domain}) is an officially registered and verified employer. This document appears safe.` 
+              : result.domain === 'Unknown' || !result.domain 
+                ? "Warning: No verifiable corporate domain found in this document. Proceed with extreme caution."
+                : `Target Domain (${result.domain}) is NOT registered in our verified employer database. High risk of impersonation.`}
           </p>
+
+          {/* AI Forensic Insight */}
+          {result.aiSummary && (
+            <div className="mt-4 pt-4 border-t border-black/5 dark:border-white/5">
+              <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">AI Forensic Insight</h5>
+              <p className="text-xs italic text-slate-600 dark:text-slate-400 bg-black/5 dark:bg-white/5 p-3 rounded-lg border-l-2 border-indigo-500">
+                "{result.aiSummary}"
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

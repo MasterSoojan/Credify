@@ -9,17 +9,19 @@ import Footer from '../components/Footer';
 
 export default function Home() {
   const { theme, setTheme } = useTheme();
+  // State to manage hydration mismatch issues between SSR and Client
   const [mounted, setMounted] = useState(false);
   
-  // States for the Login/Signup Pop-Up
+  // States for the Login/Signup Authentication Pop-Up modal
   const [showAuthModal, setShowAuthModal] = useState(false);
+  // Toggle between Login and Signup modes in the modal
   const [isLogin, setIsLogin] = useState(true);
 
-  // Prevents hydration flicker
+  // Prevents hydration flicker by only rendering theme-dependent UI after mount
   useEffect(() => setMounted(true), []);
 
   return (
-    <main className="min-h-screen bg-background text-foreground font-sans transition-colors duration-300 relative">
+    <main className="min-h-screen bg-white dark:bg-[#0A0F1C] text-slate-900 dark:text-slate-200 font-sans transition-colors duration-300 relative">
       
       {/* --- FEATURE #4: LIVE THREAT TICKER --- */}
       <ScamTicker />
@@ -47,7 +49,7 @@ export default function Home() {
 
       {/* --- AUTHENTICATION MODAL --- */}
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-slate-900/40 dark:bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-background w-full max-w-md p-8 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-slate-800 relative text-foreground">
             
             <button 

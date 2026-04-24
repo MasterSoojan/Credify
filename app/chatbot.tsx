@@ -3,15 +3,20 @@
 import { useState, useRef, useEffect } from 'react';
 
 export default function Chatbot() {
+  // State for toggling the chat window open/close
   const [isOpen, setIsOpen] = useState(false);
+  // State for storing the conversation history
   const [messages, setMessages] = useState<{ role: 'user' | 'bot', text: string }[]>([
     { role: 'bot', text: 'Hi! I am the Credify AI Assistant. Do you need help verifying an offer letter or spotting a scam?' }
   ]);
+  // State for the current user input
   const [input, setInput] = useState('');
+  // State to show typing indicator when waiting for API response
   const [isLoading, setIsLoading] = useState(false);
+  // Ref used to auto-scroll to the bottom of the chat
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to the latest message
+  // Auto-scroll to the latest message whenever messages state updates
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -20,8 +25,11 @@ export default function Chatbot() {
     e.preventDefault();
     if (!input.trim()) return;
 
+    // Capture the current input and add user message to the conversation
     const userMsg = input.trim();
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    
+    // Clear input field and set loading state to true
     setInput('');
     setIsLoading(true);
 
