@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react'; // Pass icon
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Password show/hide
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,16 +24,15 @@ export default function ResetPasswordPage() {
       const response = await fetch('/api/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword }),
+        body: JSON.stringify({ email }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to reset password');
+        throw new Error(errorData.message || 'Failed to send reset email');
       }
 
-      setSuccess('Password updated successfully. Redirecting to login...');
-      setTimeout(() => router.push('/login'), 2000);
+      setSuccess('If an account exists, a password reset link has been sent to your email.');
 
     } catch (err: any) {
       setError(err.message);
@@ -64,24 +65,13 @@ export default function ResetPasswordPage() {
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Email or User ID</label>
+            <label className="block text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Email</label>
             <input 
-              type="text" 
+              type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="you@college.edu or john_doe99" 
-              className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">New Password</label>
-            <input 
-              type="password" 
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              placeholder="••••••••" 
+              placeholder="you@college.edu" 
               className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all"
             />
           </div>
@@ -91,7 +81,7 @@ export default function ResetPasswordPage() {
             disabled={isLoading || !!success}
             className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-md mt-4"
           >
-            {isLoading ? 'Updating...' : 'Update Password'}
+            {isLoading ? 'Sending Link...' : 'Send Reset Link'}
           </button>
         </form>
 

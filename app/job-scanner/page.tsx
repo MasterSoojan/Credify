@@ -4,7 +4,7 @@ import VerificationForm from '../../components/VerificationForm';
 import ScamTicker from '../../components/ScamTicker';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import Chatbot from '../chatbot';
+import Chatbot from '../../components/Chatbot';
 import Footer from '../../components/Footer';
 
 export default function Home() {

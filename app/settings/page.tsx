@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Save, KeyRound, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Save, KeyRound, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 
 export default function SettingsPage() {
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -11,24 +11,25 @@ export default function SettingsPage() {
     newPassword: '',
     confirmPassword: ''
   });
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('saving');
     setErrorMessage('');
 
-    const usersDbStr = localStorage.getItem('credify_users_db');
-    const usersDb = usersDbStr ? JSON.parse(usersDbStr) : {};
     const currentUser = localStorage.getItem('credify_user');
 
-    if (currentUser && usersDb[currentUser] && passwords.oldPassword !== usersDb[currentUser]) {
+    if (!currentUser) {
       setStatus('error');
-      setErrorMessage('Current password is incorrect.');
+      setErrorMessage('User session not found.');
       return;
     }
 
@@ -44,16 +45,38 @@ export default function SettingsPage() {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      if (currentUser) {
-        usersDb[currentUser] = passwords.newPassword;
-        localStorage.setItem('credify_users_db', JSON.stringify(usersDb));
+    try {
+      // 1. Verify old password
+      const loginRes = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentUser, password: passwords.oldPassword })
+      });
+
+      if (!loginRes.ok) {
+        setStatus('error');
+        setErrorMessage('Current password is incorrect.');
+        return;
       }
+
+      // 2. Update password
+      const resetRes = await fetch('/api/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentUser, newPassword: passwords.newPassword })
+      });
+
+      if (!resetRes.ok) {
+        throw new Error('Failed to update password');
+      }
+
       setStatus('saved');
       setPasswords({ oldPassword: '', newPassword: '', confirmPassword: '' });
       setTimeout(() => setStatus('idle'), 3000);
-    }, 1000);
+    } catch (err: any) {
+      setStatus('error');
+      setErrorMessage(err.message || 'An error occurred.');
+    }
   };
 
   return (
@@ -91,41 +114,68 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Current Password</label>
-              <input 
-                type="password"
-                name="oldPassword"
-                value={passwords.oldPassword}
-                onChange={handleChange}
-                required
-                className="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-cyan-500 transition-all text-sm" 
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input 
+                  type={showOldPassword ? "text" : "password"}
+                  name="oldPassword"
+                  value={passwords.oldPassword}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-cyan-500 transition-all text-sm pr-12" 
+                  placeholder="••••••••"
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowOldPassword(!showOldPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                >
+                  {showOldPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">New Password</label>
-                <input 
-                  type="password"
-                  name="newPassword"
-                  value={passwords.newPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-cyan-500 transition-all text-sm" 
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input 
+                    type={showNewPassword ? "text" : "password"}
+                    name="newPassword"
+                    value={passwords.newPassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-cyan-500 transition-all text-sm pr-12" 
+                    placeholder="••••••••"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  >
+                    {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 ml-1">Re-enter New Password</label>
-                <input 
-                  type="password"
-                  name="confirmPassword"
-                  value={passwords.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-cyan-500 transition-all text-sm" 
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input 
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={passwords.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-cyan-500 transition-all text-sm pr-12" 
+                    placeholder="••••••••"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
             </div>
 

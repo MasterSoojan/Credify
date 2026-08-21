@@ -1,40 +1,26 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
-import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { email, newPassword } = body;
+        const { email } = await request.json();
 
-        if (!email || !newPassword) {
-            return NextResponse.json({ message: 'Email and new password are required' }, { status: 400 });
+        if (!email) {
+            return NextResponse.json({ message: 'Email is required' }, { status: 400 });
         }
 
-        // Hash new password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-        // Update user
-        const { data: updatedUser, error } = await supabase
-            .from('users_custom')
-            .update({ password_hash: hashedPassword })
-            .or(`email.eq.${email},user_id.eq.${email}`)
-            .select()
-            .single();
+        // Send reset password email using Supabase Auth
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/reset-password/update`,
+        });
 
         if (error) {
-            if (error.code === '42P01') {
-                return NextResponse.json({ message: 'Password updated successfully (MOCK MODE)' }, { status: 200 });
-            }
-            if (error.code === 'PGRST116') {
-                return NextResponse.json({ message: 'User not found.' }, { status: 404 });
-            }
-            throw error;
+            console.error("Reset password error:", error);
+            return NextResponse.json({ message: error.message }, { status: 400 });
         }
 
         return NextResponse.json({
-            message: 'Password updated successfully',
+            message: 'Password reset email sent successfully',
         }, { status: 200 });
 
     } catch (error: any) {

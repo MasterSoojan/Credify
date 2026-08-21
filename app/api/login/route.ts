@@ -1,62 +1,52 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
-import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        // identifier can be either email or userID
-        const { email, password } = body;
+        const { email, password } = await request.json();
 
         if (!email || !password) {
             return NextResponse.json({ message: 'Email/UserID and password are required' }, { status: 400 });
         }
 
-        // --- HARDCODED MOCK LOGIN ---
-        if ((email === 'admin@credify.com' || email === 'credify_admin') && password === 'password123') {
-            return NextResponse.json({
-                message: 'Login successful',
-                user: { id: 1, email: 'admin@credify.com', userId: 'credify_admin' }
-            }, { status: 200 });
+        let loginEmail = email;
+
+        // If the user entered a User ID (no '@'), fetch their email first
+        if (!email.includes('@')) {
+            const { data: customUser, error: customError } = await supabase
+                .from('users_custom')
+                .select('email')
+                .eq('user_id', email)
+                .single();
+
+            if (customError || !customUser) {
+                return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+            }
+            loginEmail = customUser.email;
         }
 
-        // Fetch user from database matching either email or user_id
-        const { data: user, error } = await supabase
+        // 1. Authenticate with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email: loginEmail,
+            password: password,
+        });
+
+        if (authError) {
+            console.error("Supabase Auth Login error:", authError);
+            return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+        }
+
+        // 2. Fetch the user_id for the response
+        const { data: customUser } = await supabase
             .from('users_custom')
-            .select('*')
-            .or(`email.eq.${email},user_id.eq.${email}`)
+            .select('user_id')
+            .eq('email', loginEmail)
             .single();
 
-        if (error) {
-            if (error.code === '42P01') {
-                console.log("⚠️ Database missing. Falling back to MOCK Log In.");
-                // Let them in using whatever they typed, or specifically admin
-                return NextResponse.json({
-                    message: 'Login successful (MOCK MODE)',
-                    user: { id: 'mock-uuid-123', email: email, userId: 'mock_user' }
-                }, { status: 200 });
-            }
-            if (error.code !== 'PGRST116') {
-                 console.error("Login select error:", error);
-            }
-            return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
-        }
-        
-        if (!user) {
-            return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
-        }
-
-        // Check password
-        const isMatch = await bcrypt.compare(password, user.password_hash);
-
-        if (isMatch) {
-            return NextResponse.json({
-                message: 'Login successful',
-                user: { id: user.id, email: user.email, userId: user.user_id }
-            }, { status: 200 });
-        } else {
-            return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
-        }
+        return NextResponse.json({
+            message: 'Login successful',
+            user: { id: authData.user?.id, email: authData.user?.email, userId: customUser?.user_id }
+        }, { status: 200 });
 
     } catch (error: any) {
         console.error("Login error:", error);

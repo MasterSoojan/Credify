@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   // Track input values and loading/error states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,26 +20,20 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Simulate network request for mock frontend
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const usersDbStr = localStorage.getItem('credify_users_db');
-      const usersDb = usersDbStr ? JSON.parse(usersDbStr) : {};
-      
-      const normalizedEmail = email.trim();
-      const normalizedPassword = password.trim();
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-      // Check if user exists and password matches
-      if (!usersDb[normalizedEmail]) {
-        throw new Error('Account not found. Please sign up first.');
-      } else if (usersDb[normalizedEmail] !== normalizedPassword) {
-        throw new Error('Incorrect password. Please try again.');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
       }
-      
-      // Save simulated user session
-      localStorage.setItem('credify_user', normalizedEmail);
-      
-      console.log('Mock login successful:', email);
+
+      // Save user session based on API response
+      localStorage.setItem('credify_user', data.user.email);
       
       // Redirect user to the main page
       window.location.href = '/';
@@ -83,14 +79,23 @@ export default function LoginPage() {
           </div>
           <div>
             <label className="block text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Password</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••" 
-              className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all"
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••" 
+                className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all pr-12"
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           <div className="flex justify-end mt-1">
             <Link href="/reset-password" className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">

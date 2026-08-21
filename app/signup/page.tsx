@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [backupEmail, setBackupEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [generatedUserId, setGeneratedUserId] = useState('');
@@ -20,40 +22,29 @@ export default function SignupPage() {
     setError('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const mockUserId = 'USER_' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      
-      const normalizedEmail = email.trim();
-      const normalizedPassword = password.trim();
-      
-      // Refactored mock database: object { email: password }
-      const usersDbStr = localStorage.getItem('credify_users_db');
-      const usersDb = usersDbStr ? JSON.parse(usersDbStr) : {};
-      
-      if (usersDb[normalizedEmail]) {
-        throw new Error('Account with this email already exists.');
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password: password.trim(), backupEmail: backupEmail.trim() })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Signup failed');
       }
       
-      // Add new user
-      usersDb[normalizedEmail] = normalizedPassword;
-      localStorage.setItem('credify_users_db', JSON.stringify(usersDb));
-      
-      // Cleanup old legacy keys
-      localStorage.removeItem('credify_registered_users');
-      localStorage.removeItem('credify_mock_password');
-      
-      // Save profile data immediately
+      // Save profile data immediately for local usage (optional, but keeping it as requested)
       localStorage.setItem('credify_profile_data', JSON.stringify({
         name: name,
-        email: normalizedEmail,
+        email: email.trim(),
         age: '',
         gender: 'prefer-not-to-say',
         occupation: '',
         location: ''
       }));
 
-      setGeneratedUserId(mockUserId);
+      setGeneratedUserId(data.user.userId);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -139,14 +130,23 @@ export default function SignupPage() {
 
           <div>
             <label className="block text-sm font-semibold text-slate-600 dark:text-slate-300 mb-2">Password</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••" 
-              className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all"
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••" 
+                className="w-full p-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all pr-12"
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
           
             <button 

@@ -2,14 +2,78 @@ import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
 import { GoogleGenAI } from '@google/genai';
 
+// ---------------------------------------------------------
+// Helper Functions
+// ---------------------------------------------------------
+
+/**
+ * Extracts a domain from text/email.
+ */
+function extractDomain(text: string): string {
+  const domainMatch = text.match(/@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
+  if (!domainMatch) return '';
+  let domain = domainMatch[1].toLowerCase();
+  // Clean up common merge artifacts
+  return domain.replace(/(com|org|net|gov|edu|in|co|io|me|biz|info).*/, '$1');
+}
+
+/**
+ * Calls Gemini API with a retry mechanism.
+ */
+async function analyzeWithGemini(promptText: string, fileData?: string, mimeType?: string, retries = 2): Promise<string> {
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
+  const contents: any[] = [{ role: 'user', parts: [{ text: promptText }] }];
+
+  if (fileData && mimeType) {
+    contents[0].parts.push({
+      inlineData: { mimeType, data: fileData }
+    });
+  }
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: contents
+      });
+      return response.text || '';
+    } catch (err: any) {
+      console.error(`❌ AI Attempt ${attempt} failed:`, err.message);
+      if (attempt === retries) return '';
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+  return '';
+}
+
+/**
+ * Parses the trust score from Gemini's response.
+ */
+function parseAiTrustScore(aiAnalysis: string): number {
+  if (!aiAnalysis) return 0;
+  
+  const ratingMatch = aiAnalysis.match(/(?:rating|score)[\s*:-]*(\d{1,3})/i) || aiAnalysis.match(/(\d{1,3})\s*\/\s*100/i);
+  if (ratingMatch && ratingMatch[1]) {
+    return parseInt(ratingMatch[1], 10) - 35;
+  }
+  
+  const lowerText = aiAnalysis.toLowerCase();
+  if (lowerText.includes('scam') && !lowerText.includes('not a scam')) return -40;
+  if (lowerText.includes('legitimate') || lowerText.includes('professional')) return 20;
+  
+  return 0;
+}
+
+// ---------------------------------------------------------
+// Main API Route
+// ---------------------------------------------------------
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { email: rawEmail, type, letterText, fileName, fileData, mimeType } = body;
-
+    const { email: rawEmail, type, letterText, fileName, fileData, mimeType } = await request.json();
     console.log(`🔍 Verification Request: type=${type}, email=${rawEmail}, file=${fileName}, textLength=${letterText?.length || 0}`);
 
-    let email = rawEmail?.trim();
+    const email = rawEmail?.trim() || '';
     let domain = '';
     let aiAnalysis = '';
     let trustScoreModifier = 0;
@@ -17,75 +81,25 @@ export async function POST(request: Request) {
     // 1. Process Based on Type
     if (type === 'letter') {
       console.log("📄 Processing Letter/PDF Scan...");
-      const combinedText = `${letterText || ''} ${fileName || ''} ${email || ''}`;
-
-      // Robust domain extraction (stops at first non-domain character)
-      const domainMatch = combinedText.match(/@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
-      if (domainMatch) {
-        domain = domainMatch[1].toLowerCase();
-        // Clean up common merge artifacts (like .comletter)
-        domain = domain.replace(/(com|org|net|gov|edu|in|co|io|me|biz|info).*/, '$1');
-        console.log(`🎯 Identified Domain: ${domain}`);
-      }
+      domain = extractDomain(`${letterText || ''} ${fileName || ''} ${email}`);
+      if (domain) console.log(`🎯 Identified Domain: ${domain}`);
 
       if ((letterText && letterText.length >= 5) || fileData) {
-        let attempts = 0;
-        while (attempts < 2) {
-          try {
-            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
-
-            const promptText = `
-              Analyze this job offer document for scams or red flags. 
-              Identify the company name and recruiter details if possible.
-              Keep your response concise. Include a "TL;DR" section at the end.
-              Return a safety rating (0-100) prominently in the text.
-              
-              Text Content: ${letterText || 'None provided'}
-            `;
-
-            const contents: any[] = [{ role: 'user', parts: [{ text: promptText }] }];
-
-            if (fileData && mimeType) {
-              contents[0].parts.push({
-                inlineData: {
-                  mimeType: mimeType,
-                  data: fileData
-                }
-              });
-            }
-
-            const response = await ai.models.generateContent({
-              model: 'gemini-2.5-flash',
-              contents: contents
-            });
-
-            aiAnalysis = response.text || '';
-            console.log("🤖 AI Analysis Complete");
-            break; // Success!
-          } catch (aiErr: any) {
-            attempts++;
-            console.error(`❌ AI Attempt ${attempts} failed:`, aiErr.message);
-            if (attempts >= 2) break;
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s before retry
-          }
-        }
-
+        const promptText = `
+          Analyze this job offer document for scams or red flags. 
+          Identify the company name and recruiter details if possible.
+          Keep your response concise. Include a "TL;DR" section at the end.
+          Return a safety rating (0-100) prominently in the text.
+          
+          Text Content: ${letterText || 'None provided'}
+        `;
+        
+        aiAnalysis = await analyzeWithGemini(promptText, fileData, mimeType);
         if (aiAnalysis) {
-          const ratingMatch = aiAnalysis.match(/(?:rating|score)[\s*:-]*(\d{1,3})/i) || aiAnalysis.match(/(\d{1,3})\s*\/\s*100/i);
-          if (ratingMatch && ratingMatch[1]) {
-             const extractedRating = parseInt(ratingMatch[1], 10);
-             trustScoreModifier = extractedRating - 35; // Math.max(0, 35 + trustScoreModifier) = extractedRating
-          } else {
-            if (aiAnalysis.toLowerCase().includes('scam') && !aiAnalysis.toLowerCase().includes('not a scam')) {
-              trustScoreModifier = -40;
-            } else if (aiAnalysis.toLowerCase().includes('legitimate') || aiAnalysis.toLowerCase().includes('professional')) {
-              trustScoreModifier = 20;
-            }
-          }
+          console.log("🤖 AI Analysis Complete");
+          trustScoreModifier = parseAiTrustScore(aiAnalysis);
         }
-      }
-
-      if (!domain && !letterText && !fileData) {
+      } else if (!domain) {
         return NextResponse.json({ error: 'Please provide some text or a file to scan.' }, { status: 400 });
       }
 
@@ -94,39 +108,37 @@ export async function POST(request: Request) {
       if (!email) {
         return NextResponse.json({ error: 'Email address is required for this scan type.' }, { status: 400 });
       }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return NextResponse.json({ error: 'Invalid email format provided.' }, { status: 400 });
       }
-      domain = email.split('@')[1]?.toLowerCase();
+      domain = email.split('@')[1]?.toLowerCase() || '';
     }
 
     // 2. Verified Domain Check (Supabase)
-    const { data: company, error } = domain ? await supabase
-      .from('verified_companies')
-      .select('*')
-      .eq('domain', domain)
-      .single() : { data: null, error: null };
-
-    if (error && error.code !== 'PGRST116') {
-      console.error("❌ Supabase Error:", error.message);
+    let company = null;
+    if (domain) {
+      const { data, error } = await supabase
+        .from('verified_companies')
+        .select('*')
+        .eq('domain', domain)
+        .single();
+        
+      if (error && error.code !== 'PGRST116') {
+        console.error("❌ Supabase Error:", error.message);
+      } else {
+        company = data;
+      }
     }
 
-    // 3. Response Generation
+    // 3. Score Calculation
     let finalScore = 35;
     let finalStatus = 'Unverified';
 
     if (type === 'letter') {
       finalScore = Math.min(100, Math.max(0, 35 + trustScoreModifier));
-      if (finalScore >= 70) {
-        finalStatus = 'Likely Safe';
-      } else if (finalScore >= 40) {
-        finalStatus = 'Moderate Risk';
-      } else {
-        finalStatus = 'High Risk';
-      }
+      finalStatus = finalScore >= 70 ? 'Likely Safe' : finalScore >= 40 ? 'Moderate Risk' : 'High Risk';
     } else {
-      // Email scan
+      // Email scan logic
       if (company) {
         finalScore = Math.min(100, Math.max(0, company.trust_score));
         finalStatus = 'Verified Employer';
