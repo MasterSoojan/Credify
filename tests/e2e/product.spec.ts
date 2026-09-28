@@ -55,20 +55,64 @@ test('ordinary links remain inconclusive and document outages are explicit', asy
     page.getByText('This is not a malware or reputation scan. The website was not visited.'),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Document', exact: true }).click();
-  await expect(page.getByText('Document analysis is taking a pause.')).toBeVisible();
+  await expect(page.getByText('Document analysis is unavailable right now.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Take a closer look' })).toBeDisabled();
 });
 
-test('paused account pages never fake sign-in or password success', async ({ page }) => {
+test('editing a review returns focus to the preserved input', async ({ page }) => {
+  await page.goto('/demo');
+  const input = page.getByLabel('What does the offer say?');
+  const original = await input.inputValue();
+  await page.getByRole('button', { name: 'Take a closer look' }).click();
+  await expect(page.locator('.result-region')).toBeFocused();
+  await page.getByRole('button', { name: 'Edit input' }).click();
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue(original);
+  await expect(page.locator('.result-region')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Take a closer look' }).click();
+  await expect(page.getByRole('heading', { name: 'Worth a closer look.' })).toBeVisible();
+});
+
+test('changed inputs cannot display a report for the previous submission', async ({ page }) => {
+  const cases = [
+    {
+      path: '/demo',
+      label: 'What does the offer say?',
+      value: 'We invite you to discuss the role with our team.',
+    },
+    {
+      path: '/job-scanner?type=email',
+      label: 'Recruiter’s email address',
+      value: 'recruiter@example.com',
+    },
+    { path: '/instant-verify', label: 'Website or offer link', value: 'https://example.com/jobs' },
+  ];
+  for (const item of cases) {
+    await page.goto(item.path);
+    const input = page.getByLabel(item.label);
+    await input.fill(item.value);
+    await page.getByRole('button', { name: 'Take a closer look' }).click();
+    await expect(page.locator('.result-region')).toBeVisible();
+    await input.fill('Changed input');
+    await expect(page.locator('.result-region')).toHaveCount(0);
+  }
+  await page.getByLabel('Website or offer link').fill('javascript:alert(1)');
+  await page.getByRole('button', { name: 'Take a closer look' }).click();
+  await expect(page.locator('main').getByRole('alert')).toBeVisible();
+  await page.getByLabel('Website or offer link').fill('https://example.com/careers');
+  await expect(page.locator('main').getByRole('alert')).toHaveCount(0);
+});
+
+test('disabled account pages never fake sign-in or password success', async ({ page }) => {
   const outgoing: string[] = [];
   page.on('request', (request) => {
     if (request.url().includes('supabase')) outgoing.push(request.url());
   });
   await page.goto('/login');
-  await expect(page.getByText('Accounts are temporarily paused.')).toBeVisible();
+  await expect(page.getByText('Sign-in is unavailable right now.')).toBeVisible();
   await expect(page.locator('input[type=password]')).toHaveCount(0);
   await page.goto('/settings');
-  await expect(page.getByText('Account services are currently paused.')).toBeVisible();
+  await expect(page.getByText('Account services are unavailable right now.')).toBeVisible();
   expect(outgoing).toEqual([]);
 });
 
@@ -96,7 +140,92 @@ test('mobile navigation and dark mode work without horizontal overflow', async (
   expect(audit.violations).toEqual([]);
 });
 
-for (const path of ['/', '/job-scanner', '/login', '/help-center', '/emergency-guide', '/search']) {
+test('desktop navigation leads directly to a review and the logo leads home', async ({ page }) => {
+  await page.goto('/');
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveCount(0);
+  await expect(nav.getByRole('button')).toHaveCount(0);
+  await nav.getByRole('link', { name: 'Verifiers', exact: true }).click();
+  await expect(page).toHaveURL(/\/verifiers$/);
+  await expect(page.getByRole('heading', { name: 'Our Verifiers.' })).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Verifiers', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+  await nav.getByRole('link', { name: 'Check an offer' }).click();
+  await expect(page).toHaveURL(/\/job-scanner$/);
+  await expect(nav.getByRole('link', { name: 'Check an offer' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+  await page.getByRole('link', { name: 'Credify home', exact: true }).click();
+  await expect(page).toHaveURL('/');
+});
+
+test('mobile navigation opens the walkthrough in one step and closes after navigation', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open navigation' }).click();
+  const nav = page.getByRole('navigation', { name: 'Mobile navigation' });
+  await expect(nav.getByRole('link', { name: 'Home', exact: true })).toHaveCount(0);
+  await expect(nav.getByRole('button')).toHaveCount(0);
+  await nav.getByRole('link', { name: 'Verifiers', exact: true }).click();
+  await expect(page).toHaveURL(/\/verifiers$/);
+  await expect(page.getByRole('heading', { name: 'Our Verifiers.' })).toBeVisible();
+  await expect(nav).toHaveCount(0);
+  await page.getByRole('button', { name: 'Open navigation' }).click();
+  await expect(nav.getByRole('link', { name: 'Verifiers', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+  await nav.getByRole('link', { name: 'How it works' }).click();
+  await expect(page).toHaveURL(/\/how-it-works$/);
+  await expect(nav).toHaveCount(0);
+  await expect(
+    page.getByRole('list', { name: 'From offer to next step' }).getByRole('listitem'),
+  ).toHaveCount(3);
+  await page.getByRole('button', { name: 'Open navigation' }).click();
+  await nav.getByRole('link', { name: 'Check an offer' }).click();
+  await expect(page.getByLabel('What does the offer say?')).toBeVisible();
+  await expect(nav).toHaveCount(0);
+});
+
+test('the landing page reveals the process and leads into a working example', async ({ page }) => {
+  const outgoing: string[] = [];
+  page.on('request', (request) => {
+    if (request.method() === 'POST') outgoing.push(request.url());
+  });
+  await page.goto('/');
+  await expect(page.getByText('Worth a closer look.', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'See how it works', exact: true }).click();
+  await expect(page).toHaveURL(/#how-it-works$/);
+  const walkthrough = page.getByRole('region', { name: 'From “is this real?” to a next step.' });
+  await expect(
+    walkthrough.getByRole('heading', { name: 'Paste what you received.' }),
+  ).toBeInViewport();
+  await expect(walkthrough.getByRole('listitem')).toHaveCount(3);
+  const heading = await page.locator('#walkthrough-heading').boundingBox();
+  expect(heading!.y).toBeGreaterThan(76);
+  await page.getByRole('link', { name: 'See what each check covers' }).click();
+  await expect(page).toHaveURL(/\/how-it-works$/);
+  await page.getByRole('link', { name: 'Try it with an example' }).click();
+  await expect(page).toHaveURL(/\/demo$/);
+  await page.getByRole('button', { name: 'Take a closer look' }).click();
+  await expect(page.getByRole('heading', { name: 'Worth a closer look.' })).toBeVisible();
+  expect(outgoing).toEqual([]);
+});
+
+for (const path of [
+  '/',
+  '/how-it-works',
+  '/job-scanner',
+  '/login',
+  '/help-center',
+  '/emergency-guide',
+  '/search',
+]) {
   test(`accessible core page: ${path}`, async ({ page }) => {
     await page.goto(path);
     await expect(page.locator('main')).toBeVisible();

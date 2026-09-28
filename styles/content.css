@@ -5,8 +5,22 @@
   gap: 60px;
   align-items: start;
 }
+.information-content {
+  min-width: 0;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.information-content .prose-section:first-child {
+  padding-top: 0;
+}
+.information-content .prose-section:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
 .information-aside {
-  margin-top: 25px;
+  margin-top: 0;
   padding: 25px;
   background: var(--brand-soft);
   border: 1px solid var(--line);
@@ -58,6 +72,9 @@
   }
   .information-aside {
     position: static;
+  }
+  .information-content {
+    padding: 24px;
   }
 }
 .resource-band {

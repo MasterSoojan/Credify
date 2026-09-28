@@ -14,6 +14,7 @@ const groups = [
     title: 'Stay informed',
     links: [
       ['Safety hub', '/help-center'],
+      ['AI assistant', '/intelligence'],
       ['Already shared information?', '/emergency-guide'],
       ['Contact & support', '/support'],
     ],
@@ -23,7 +24,7 @@ const groups = [
     links: [
       ['For employers', '/employers'],
       ['Our approach', '/trustscore'],
-      ['Product roadmap', '/verifiers'],
+      ['Verifiers', '/verifiers'],
     ],
   },
 ];

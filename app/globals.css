@@ -1,33 +1,36 @@
 @import 'tailwindcss';
-@import '../styles/scanner.css';
-@import '../styles/account.css';
-@import '../styles/content.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Semantic tokens keep component styles independent of the selected color scheme. */
 :root {
-  --canvas: var(--color-slate-50);
+  --canvas: #fff;
   --surface: #fff;
-  --surface-soft: var(--color-slate-100);
-  --ink: var(--color-slate-900);
-  --muted: var(--color-slate-600);
-  --line: var(--color-slate-200);
-  --control-line: var(--color-slate-500);
-  --brand: var(--color-indigo-600);
-  --brand-soft: var(--color-indigo-50);
-  --accent: var(--color-indigo-100);
-  /* Actions retain white-on-indigo contrast while dark-mode links use cyan. */
-  --action: var(--color-indigo-600);
-  --action-hover: var(--color-indigo-700);
+  --surface-soft: #f4f7fa;
+  --field: #f8fafc;
+  --ink: #18243b;
+  --muted: #52627a;
+  --line: #dce3ef;
+  --control-line: #7c8ba3;
+  --brand: #0369a1;
+  --brand-soft: #edf6fb;
+  --accent: #cce8f4;
+  --hero-accent-start: #2563eb;
+  --hero-accent-end: #0e7490;
+  /* Cool details stay secondary to neutral controls and typography. */
+  --highlight: #0e7490;
+  --highlight-soft: #e7f5f9;
+  /* Primary controls invert with the theme; brand colour is reserved for details. */
+  --action: #172234;
+  --action-hover: #293b52;
   --on-action: #fff;
-  --success: var(--color-emerald-700);
-  --success-soft: var(--color-emerald-50);
-  --warning: var(--color-amber-800);
-  --warning-soft: var(--color-amber-50);
-  --danger: var(--color-rose-700);
-  --danger-soft: var(--color-rose-50);
-  --shadow: 0 20px 60px -32px color-mix(in srgb, var(--color-slate-900), transparent 70%);
+  --success: #187255;
+  --success-soft: #e8f6ef;
+  --warning: #92580b;
+  --warning-soft: #fff4df;
+  --danger: #b42332;
+  --danger-soft: #fff1f2;
+  --shadow: 0 20px 60px -32px #23386540;
   --background: var(--canvas);
   --foreground: var(--ink);
   color-scheme: light;
@@ -35,21 +38,29 @@
 .dark {
   /* Original Credify page background; slate cards provide the surface hierarchy. */
   --canvas: #0a0f1c;
-  --surface: var(--color-slate-900);
-  --surface-soft: var(--color-slate-800);
-  --ink: var(--color-slate-100);
-  --muted: var(--color-slate-400);
-  --line: var(--color-slate-700);
-  --control-line: var(--color-slate-500);
-  --brand: var(--color-cyan-400);
-  --brand-soft: color-mix(in srgb, var(--color-cyan-950) 45%, var(--surface));
-  --accent: var(--color-cyan-900);
-  --success: var(--color-emerald-300);
-  --success-soft: color-mix(in srgb, var(--color-emerald-950) 55%, var(--surface));
-  --warning: var(--color-amber-300);
-  --warning-soft: color-mix(in srgb, var(--color-amber-950) 55%, var(--surface));
-  --danger: var(--color-rose-300);
-  --danger-soft: color-mix(in srgb, var(--color-rose-950) 55%, var(--surface));
+  --surface: #101827;
+  --surface-soft: #172233;
+  --field: #0e1728;
+  --ink: #e8eef8;
+  --muted: #a5b4ca;
+  --line: #2c3d56;
+  --control-line: #71839f;
+  --brand: #67d4e8;
+  --brand-soft: #112e3c;
+  --accent: #1d4b60;
+  --hero-accent-start: #60a5fa;
+  --hero-accent-end: #67e8f9;
+  --highlight: #67d4e8;
+  --highlight-soft: #112734;
+  --action: #edf2f7;
+  --action-hover: #fff;
+  --on-action: #101827;
+  --success: #7cd8ae;
+  --success-soft: #15342e;
+  --warning: #f4c875;
+  --warning-soft: #352918;
+  --danger: #fda4a4;
+  --danger-soft: #351d26;
   --shadow: 0 20px 60px -32px #000;
   color-scheme: dark;
 }
@@ -119,6 +130,7 @@ h3 {
   line-height: 1.15;
   letter-spacing: -0.035em;
   font-weight: 800;
+  text-wrap: balance;
 }
 svg {
   flex-shrink: 0;
@@ -144,14 +156,14 @@ svg {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: color-mix(in srgb, var(--canvas) 92%, transparent);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
 }
 .header-inner {
   width: min(1320px, calc(100% - 64px));
   margin: auto;
-  min-height: 82px;
+  min-height: 76px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -180,26 +192,20 @@ svg {
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 6px;
   font-size: 13px;
   font-weight: 600;
 }
-.desktop-nav a {
-  position: relative;
-  padding-block: 30px;
+.desktop-nav > a {
+  padding: 11px 14px;
+  border-radius: 10px;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
-.desktop-nav a:hover,
-.desktop-nav a[aria-current] {
+.desktop-nav > a:hover,
+.desktop-nav > a[aria-current] {
   color: var(--brand);
-}
-.desktop-nav a[aria-current]::after {
-  content: '';
-  position: absolute;
-  height: 2px;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  background: var(--brand);
 }
 .header-actions {
   display: flex;
@@ -212,10 +218,14 @@ svg {
   align-items: center;
   font-size: 13px;
   font-weight: 600;
+  min-height: 44px;
+}
+.header-signin:hover {
+  color: var(--brand);
 }
 .icon-button {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: inline-grid;
   place-items: center;
   border: 1px solid var(--control-line);
@@ -257,6 +267,7 @@ svg {
 .button-primary {
   background: var(--action);
   color: var(--on-action);
+  box-shadow: 0 2px 3px #0000000a;
 }
 .button-primary:hover {
   background: var(--action-hover);
@@ -269,6 +280,10 @@ svg {
 .button-secondary:hover,
 .button-quiet:hover {
   background: var(--surface-soft);
+  color: var(--ink);
+}
+.button-secondary:hover {
+  border-color: var(--ink);
 }
 .button-quiet {
   color: var(--ink);
@@ -305,6 +320,10 @@ svg {
 .heading-accent {
   color: var(--brand);
 }
+.text-alert,
+a.text-link[href='/emergency-guide'] {
+  color: var(--danger);
+}
 .lead {
   color: var(--muted);
   font-size: 17px;
@@ -324,7 +343,7 @@ svg {
   text-underline-offset: 4px;
 }
 .hero {
-  padding-block: 84px 70px;
+  padding-block: 64px 56px;
   position: relative;
   isolation: isolate;
 }
@@ -337,19 +356,19 @@ svg {
   background:
     radial-gradient(
       ellipse closest-side at 28% 32%,
-      color-mix(in srgb, var(--brand) 12%, transparent),
+      color-mix(in srgb, var(--brand) 7%, transparent),
       transparent
     ),
     radial-gradient(
       ellipse closest-side at 78% 70%,
-      color-mix(in srgb, var(--action) 10%, transparent),
+      color-mix(in srgb, var(--highlight) 6%, transparent),
       transparent
     );
 }
 .hero-grid {
   display: grid;
   grid-template-columns: 1.08fr 1fr;
-  gap: 76px;
+  gap: 64px;
   align-items: center;
 }
 .hero h1 {
@@ -359,13 +378,19 @@ svg {
   font-weight: 900;
   letter-spacing: -0.05em;
 }
+.hero .heading-accent {
+  color: var(--hero-accent-end);
+  background: linear-gradient(115deg, var(--hero-accent-start), var(--hero-accent-end));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 .hero .lead {
   max-width: 450px;
   font-size: 16px;
   margin-bottom: 30px;
 }
 .hero-note {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   display: flex;
   gap: 7px;
@@ -374,7 +399,7 @@ svg {
 }
 .hero-visual {
   position: relative;
-  padding: 28px 15px 27px 5px;
+  padding: 0;
   isolation: isolate;
 }
 .hero-visual::before {
@@ -382,12 +407,12 @@ svg {
   position: absolute;
   inset: 0 -20px;
   border-radius: 50%;
-  background: radial-gradient(ellipse, var(--brand-soft) 40%, transparent 70%);
+  background: radial-gradient(ellipse, var(--highlight-soft) 40%, transparent 70%);
   z-index: -1;
 }
 .sample-card {
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -427,7 +452,7 @@ svg {
   font-size: 12px;
   color: var(--muted);
   line-height: 1.9;
-  background: var(--canvas);
+  background: var(--surface-soft);
 }
 .sample-email strong {
   display: block;
@@ -483,20 +508,6 @@ mark {
 .sample-checks svg {
   color: var(--warning);
 }
-.floating-note {
-  position: relative;
-  margin: -2px -14px 0 65px;
-  padding: 14px 18px;
-  border: 1px solid var(--line);
-  background: var(--brand-soft);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 11px;
-  color: var(--ink);
-}
 .trust-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -513,7 +524,7 @@ mark {
   color: var(--muted);
 }
 .trust-strip svg {
-  color: var(--brand);
+  color: var(--highlight);
 }
 .section {
   padding-block: 75px;
@@ -548,6 +559,21 @@ mark {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s,
+    transform 0.18s;
+}
+.feature-card:focus-within {
+  border-color: var(--brand);
+  box-shadow: var(--shadow);
+}
+@media (hover: hover) {
+  .feature-card:hover {
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+  }
 }
 .feature-card .feature-icon {
   background: var(--brand-soft);
@@ -559,6 +585,10 @@ mark {
   place-items: center;
   margin-bottom: 24px;
 }
+.feature-card h2,
+.feature-card h3 {
+  color: var(--brand);
+}
 .feature-card h3 {
   font-size: 19px;
   font-weight: 700;
@@ -566,7 +596,7 @@ mark {
 }
 .feature-card p {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.8;
   margin-bottom: 22px;
 }
@@ -583,13 +613,28 @@ mark {
   gap: 55px;
   padding-top: 14px;
 }
+.steps-grid > div {
+  position: relative;
+}
+.steps-grid > div:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 66px;
+  right: -35px;
+  border-top: 1px solid var(--line);
+}
 .step-number {
   font-weight: 800;
-  font-size: 32px;
+  font-size: 15px;
   color: var(--brand);
-  display: block;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
   margin-bottom: 22px;
 }
 .steps-grid h3 {
@@ -619,6 +664,14 @@ mark {
 }
 .faq-list details {
   border-bottom: 1px solid var(--line);
+  padding-inline: 16px;
+  border-radius: 12px;
+}
+.faq-list details[open] {
+  background: var(--surface);
+}
+.faq-list summary:hover {
+  color: var(--brand);
 }
 .faq-list summary {
   padding: 20px 30px 20px 0;
@@ -655,7 +708,7 @@ mark {
   gap: 40px;
   padding: 38px 45px;
   border-radius: 24px;
-  background: var(--brand-soft);
+  background: var(--surface-soft);
   border: 1px solid var(--line);
   margin-bottom: 75px;
 }
@@ -745,6 +798,7 @@ mark {
   font-size: clamp(32px, 4vw, 48px);
   font-weight: 800;
   margin: 15px 0;
+  max-width: 22ch;
 }
 .page-intro .lead {
   font-size: 15px;
@@ -786,6 +840,7 @@ mark {
 .notice-success {
   background: var(--success-soft);
   color: var(--success);
+  border-color: color-mix(in srgb, var(--success), transparent 75%);
 }
 .field {
   display: flex;
@@ -797,23 +852,27 @@ mark {
   font-weight: 600;
 }
 .field-hint {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 .input {
   width: 100%;
   border: 1px solid var(--control-line);
   border-radius: 12px;
-  background: var(--canvas);
+  background: var(--field);
   color: var(--ink);
   padding: 13px 15px;
   line-height: 1.6;
 }
 .input::placeholder {
   color: var(--muted);
-  opacity: 0.8;
+  opacity: 1;
+}
+.input:hover {
+  border-color: var(--brand);
 }
 .input:focus {
+  border-color: var(--brand);
   outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
@@ -883,7 +942,10 @@ textarea.input {
 }
 @media (max-width: 1050px) {
   .desktop-nav {
-    gap: 20px;
+    gap: 2px;
+  }
+  .desktop-nav > a {
+    padding-inline: 10px;
   }
   .header-actions {
     gap: 12px;
@@ -907,16 +969,23 @@ textarea.input {
     display: flex;
     flex-direction: column;
     border-top: 1px solid var(--line);
-    padding: 15px 32px;
+    padding: 12px 32px 20px;
+    gap: 4px;
+    max-height: calc(100svh - 76px);
+    overflow-y: auto;
+    box-shadow: var(--shadow);
   }
   .mobile-nav a {
-    padding: 13px 0;
+    padding: 13px 16px;
     display: flex;
     justify-content: space-between;
     font-size: 14px;
+    border-radius: 10px;
   }
+  .mobile-nav a:hover,
   .mobile-nav a[aria-current] {
     color: var(--brand);
+    background: var(--brand-soft);
   }
   .hero {
     padding-top: 55px;
@@ -932,9 +1001,6 @@ textarea.input {
   }
   .sample-body {
     padding: 18px;
-  }
-  .floating-note {
-    margin-left: 25px;
   }
   .cards-grid {
     gap: 14px;
@@ -953,7 +1019,7 @@ textarea.input {
   }
   .header-inner {
     width: calc(100% - 40px);
-    min-height: 72px;
+    min-height: 68px;
   }
   .mobile-nav {
     padding-inline: 20px;
@@ -966,14 +1032,32 @@ textarea.input {
     padding: 42px 0;
   }
   .hero h1 {
-    font-size: 46px;
+    font-size: clamp(32px, 9.2vw, 46px);
+    line-height: 1.12;
+    letter-spacing: -0.045em;
+    margin-block: 20px;
   }
   .hero .lead {
     font-size: 15px;
   }
+  .hero .button-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .hero .button {
+    padding-inline: 10px;
+    font-size: 13px;
+  }
+  .hero-note {
+    align-items: flex-start;
+  }
+  .hero-note svg {
+    margin-top: 3px;
+  }
   .hero-visual {
     max-width: 430px;
-    width: calc(100% - 14px);
+    width: 100%;
     margin: auto;
   }
   .hero-visual::before {
@@ -1016,9 +1100,26 @@ textarea.input {
   .steps-grid {
     gap: 28px;
   }
+  .steps-grid > div {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    column-gap: 18px;
+  }
+  .steps-grid > div:not(:last-child)::after {
+    top: 58px;
+    bottom: -18px;
+    left: 24px;
+    right: auto;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+  .steps-grid h3,
+  .steps-grid p {
+    grid-column: 2;
+  }
   .step-number {
-    padding-bottom: 12px;
-    margin-bottom: 14px;
+    grid-row: 1 / span 2;
+    margin: 0;
   }
   .split-section {
     gap: 24px;
@@ -1048,13 +1149,21 @@ textarea.input {
     font-size: 11px;
   }
   .page-intro {
-    padding-top: 36px;
+    padding: 30px 0 26px;
+  }
+  .page-intro h1 {
+    font-size: 30px;
   }
   .page-main {
     padding-bottom: 48px;
   }
   .card {
     padding: 22px;
+  }
+  .footer-group a {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
   }
 }
 @media (prefers-reduced-motion: reduce) {

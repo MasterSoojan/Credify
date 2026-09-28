@@ -23,9 +23,9 @@ export default function SupportPage() {
       <section className="prose-section">
         <h2>I can’t sign in.</h2>
         <p>
-          Account services may be paused during the preview. Basic checks still work without signing
-          in. When accounts are available, use your email address and confirm your signup email. For
-          a forgotten password, <a href="/reset-password">request a new recovery link</a>.
+          Use your email address and confirm your signup email before signing in. Basic checks also
+          work without an account. For a forgotten password,{' '}
+          <a href="/reset-password">request a new recovery link</a>.
         </p>
       </section>
       <section className="prose-section">

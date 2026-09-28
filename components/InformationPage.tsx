@@ -17,7 +17,7 @@ export function InformationPage({
     <main className="container page-main">
       <PageIntro eyebrow={eyebrow} title={title} description={description} />
       <div className="information-layout">
-        <div>{children}</div>
+        <div className="information-content">{children}</div>
         <aside className="information-aside">
           <p className="eyebrow">
             <span />

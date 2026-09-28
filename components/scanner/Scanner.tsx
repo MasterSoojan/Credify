@@ -31,10 +31,10 @@ import { ScanResult } from './ScanResult';
 export const EXAMPLE_OFFER =
   'Congratulations! You have been selected for the position of Junior Marketing Associate. To secure your position, please pay a registration fee of $150. Reply within 2 hours to confirm your acceptance. Our recruiter will send the next steps on Telegram.';
 const options = [
-  { type: 'text', label: 'Offer text', icon: FileText },
-  { type: 'email', label: 'Email', icon: Mail },
-  { type: 'url', label: 'Link', icon: Link2 },
-  { type: 'document', label: 'Document', icon: Upload },
+  { type: 'text', label: 'Offer text', hint: 'Paste text', icon: FileText },
+  { type: 'email', label: 'Email', hint: 'Email domain', icon: Mail },
+  { type: 'url', label: 'Link', hint: 'URL structure', icon: Link2 },
+  { type: 'document', label: 'Document', hint: 'AI review', icon: Upload },
 ] as const;
 
 function readFile(file: File): Promise<string> {
@@ -72,11 +72,23 @@ export function Scanner({
   const requestRef = useRef<AbortController | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const resultRegion = useRef<HTMLDivElement>(null);
+  const inputForm = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (result) resultRegion.current?.focus({ preventScroll: false });
   }, [result]);
   useEffect(() => () => requestRef.current?.abort(), []);
+
+  // A report describes a single submission; editing its input invalidates that report.
+  function clearReview() {
+    setResult(null);
+    setError('');
+  }
+
+  function editInput() {
+    clearReview();
+    inputForm.current?.querySelector<HTMLElement>('textarea, input:not(:disabled)')?.focus();
+  }
 
   function selectType(value: ScanType) {
     requestRef.current?.abort();
@@ -178,20 +190,25 @@ export function Scanner({
           </span>
         </div>
         <div className="scanner-tabs" role="group" aria-label="Choose what to check">
-          {options.map(({ type: value, label, icon: Icon }) => (
+          {options.map(({ type: value, label, hint, icon: Icon }) => (
             <button
               type="button"
               key={value}
               aria-pressed={type === value}
+              aria-label={label}
+              aria-describedby={`scan-${value}-hint`}
               onClick={() => selectType(value)}
               disabled={busy}
             >
-              <Icon size={17} />
-              {label}
+              <Icon size={20} aria-hidden="true" />
+              <span className="scanner-tab-label">
+                {label}
+                <small id={`scan-${value}-hint`}>{hint}</small>
+              </span>
             </button>
           ))}
         </div>
-        <form className="scanner-form stack" onSubmit={submit}>
+        <form ref={inputForm} className="scanner-form stack" onSubmit={submit}>
           {type === 'text' && (
             <>
               <Field
@@ -205,7 +222,11 @@ export function Scanner({
                   rows={8}
                   maxLength={MAX_TEXT_LENGTH}
                   value={text}
-                  onChange={(event) => setText(event.target.value)}
+                  onChange={(event) => {
+                    setText(event.target.value);
+                    clearReview();
+                  }}
+                  readOnly={busy}
                   placeholder="Paste the job offer, recruiter message, or email you’d like a second perspective on…"
                   aria-describedby="offer-text-hint"
                   required
@@ -216,6 +237,7 @@ export function Scanner({
                 <button
                   className="text-link"
                   type="button"
+                  disabled={busy}
                   onClick={() => {
                     setText(EXAMPLE_OFFER);
                     setResult(null);
@@ -241,7 +263,11 @@ export function Scanner({
                 type="email"
                 className="input"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  clearReview();
+                }}
+                readOnly={busy}
                 placeholder="recruiter@example.com"
                 maxLength={254}
                 autoComplete="off"
@@ -260,7 +286,13 @@ export function Scanner({
                 id="offer-url"
                 className="input"
                 value={url}
-                onChange={(event) => setUrl(event.target.value)}
+                onChange={(event) => {
+                  setUrl(event.target.value);
+                  clearReview();
+                }}
+                readOnly={busy}
+                inputMode="url"
+                spellCheck={false}
                 placeholder="https://example.com/careers"
                 maxLength={2048}
                 autoComplete="off"
@@ -272,7 +304,7 @@ export function Scanner({
           {type === 'document' && (
             <>
               {!aiAvailable && (
-                <Notice title="Document analysis is taking a pause.">
+                <Notice title="Document analysis is unavailable right now.">
                   You can still paste the document’s text in the Offer text tab for a basic review.
                   No file will be uploaded while analysis is unavailable.
                 </Notice>
@@ -281,12 +313,14 @@ export function Scanner({
                 className={`upload-area ${dragging ? 'is-dragging' : ''}`}
                 onDragOver={(event) => {
                   event.preventDefault();
+                  if (busy || !aiAvailable) return;
                   setDragging(true);
                 }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={(event) => {
                   event.preventDefault();
                   setDragging(false);
+                  if (busy || !aiAvailable) return;
                   selectFile(event.dataTransfer.files[0]);
                 }}
               >
@@ -301,14 +335,16 @@ export function Scanner({
                   type="file"
                   accept="application/pdf,image/png,image/jpeg"
                   onChange={(event) => selectFile(event.target.files?.[0])}
-                  disabled={!aiAvailable}
+                  disabled={!aiAvailable || busy}
                 />
                 {file && (
                   <button
                     type="button"
                     className="text-link"
+                    disabled={busy}
                     onClick={() => {
                       setFile(null);
+                      clearReview();
                       if (fileInput.current) fileInput.current.value = '';
                     }}
                   >
@@ -323,7 +359,11 @@ export function Scanner({
               <input
                 type="checkbox"
                 checked={useAi}
-                onChange={(event) => setUseAi(event.target.checked)}
+                onChange={(event) => {
+                  setUseAi(event.target.checked);
+                  clearReview();
+                }}
+                disabled={busy}
               />
               <span>
                 <strong>Add an AI-assisted review</strong>
@@ -340,7 +380,11 @@ export function Scanner({
               <input
                 type="checkbox"
                 checked={consent}
-                onChange={(event) => setConsent(event.target.checked)}
+                onChange={(event) => {
+                  setConsent(event.target.checked);
+                  clearReview();
+                }}
+                disabled={busy}
                 required
               />
               <span>
@@ -387,7 +431,7 @@ export function Scanner({
             className="result-region"
             aria-label="Your review results"
           >
-            <ScanResult key={result.id} result={result} />
+            <ScanResult key={result.id} result={result} onEdit={editInput} />
           </div>
         )}
         <span className="sr-only" aria-live="polite">

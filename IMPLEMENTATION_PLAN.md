@@ -1,10 +1,12 @@
 # Credify implementation plan
 
-**Visual follow-up:** [Restore the original UI and colours](docs/UI_RESTORATION_PLAN.md). Implemented on 2026-09-28 after preserving the green/cream UI in local checkpoint `4d0e300`. The original indigo/cyan/slate identity is restored on the improved application. The owner will push the commits later.
+**Visual follow-up:** [Restore the original UI and colours](docs/UI_RESTORATION_PLAN.md). Implemented on 2026-09-28 after preserving the green/cream UI in local checkpoint `4d0e300`. The original indigo/cyan/slate identity is restored on the improved application. The owner has authorized pushing these checkpoints with the final UI handoff.
+
+**Current handoff:** the owner has authorized committing and pushing the completed UI refinements and documentation. Use the [design reference](docs/DESIGN.md), [user guide](docs/USER_GUIDE.md), and [upload guide](docs/UPLOAD.md) for the current application. The owner controls staging, commits, and uploads.
 
 This is the **historical audit and proposed sequence** prepared on 2026-09-27, before the implementation. The findings below describe the original code, not the current application. The owner subsequently authorized the redesign and implementation. See [delivery status](docs/STATUS.md) for what was delivered, current validation, deliberate scope decisions, and remaining release gates. Original estimates are planning estimates, not recorded effort.
 
-Supabase is currently paused, as confirmed by the project owner. It remained paused throughout planning and implementation. Use a local Supabase instance or an isolated test database for development and policy tests; provider doubles can cover application behavior but cannot validate RLS. Hosted authentication, schema/policy inspection, and end-to-end database validation depend on the project being resumed. Connection failures while paused are an environment condition, not evidence of an application regression.
+At the time of the original audit, the owner reported Supabase paused. This is historical context; the current UX assumes working connected services and does not reflect a temporary project pause. Use a local Supabase instance or an isolated test database for development and policy tests; provider doubles can cover application behavior but cannot validate RLS. Hosted authentication, schema/policy inspection, and end-to-end database validation depend on the project being resumed. Connection failures while paused are an environment condition, not evidence of an application regression.
 
 **Recommended direction**
 

@@ -169,7 +169,7 @@ export function AuthForm({
         <p className="muted small">{content.description}</p>
         {!available ? (
           <div className="stack auth-form">
-            <Notice title="Accounts are temporarily paused.">
+            <Notice title="Sign-in is unavailable right now.">
               Sign-in and account changes are unavailable right now. Your basic text, email, and
               link checks are still here, with no account needed.
             </Notice>

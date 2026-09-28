@@ -28,7 +28,7 @@ export default function TermsPage() {
       <section className="prose-section">
         <h2>Availability and accounts</h2>
         <p>
-          This is a developing product. Some services may be paused or unavailable, and features
+          This is a developing product. Some services may be temporarily unavailable, and features
           marked as planned are not currently offered. There are no paid subscriptions or purchase
           flows in this version. Keep account credentials private and use the security settings when
           account services are available.

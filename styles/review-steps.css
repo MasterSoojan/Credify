@@ -1,0 +1,190 @@
+.review-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.review-steps > li {
+  --step-ink: var(--brand);
+  --step-surface: var(--brand-soft);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+}
+.review-steps > .review-step-caution {
+  --step-ink: var(--danger);
+  --step-surface: var(--danger-soft);
+}
+.review-steps > .review-step-action {
+  --step-ink: var(--highlight);
+  --step-surface: var(--highlight-soft);
+}
+.review-steps > li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 60px;
+  right: -8px;
+  border-top: 1px solid var(--control-line);
+}
+.review-step-number {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background: var(--step-surface);
+  color: var(--step-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+.review-step-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.review-step-card > svg {
+  color: var(--step-ink);
+  margin-bottom: 22px;
+}
+.review-step-card h3 {
+  color: var(--step-ink);
+  font-size: 21px;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+.review-step-card > p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+.step-example {
+  margin-top: auto;
+  padding: 18px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.step-example-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.step-example-warning {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.step-example-warning .step-example-label {
+  color: var(--danger);
+}
+.step-example strong {
+  display: block;
+  margin-bottom: 6px;
+}
+.walkthrough-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+}
+.walkthrough-footer p {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 570px;
+}
+.how-intro {
+  text-align: center;
+  padding-bottom: 44px;
+}
+.how-intro .eyebrow,
+.how-intro .button-row {
+  justify-content: center;
+}
+.how-intro h1,
+.how-intro .lead {
+  margin-inline: auto;
+}
+.how-intro .button-row {
+  margin-top: 26px;
+}
+.how-methods .feature-card ul {
+  color: var(--muted);
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0 0 20px;
+}
+.how-methods .feature-card li + li {
+  margin-top: 8px;
+}
+@media (max-width: 850px) {
+  .review-steps {
+    gap: 16px;
+  }
+  .review-step-card {
+    padding: 20px;
+  }
+  .review-step-card h3 {
+    font-size: 19px;
+  }
+  .step-example {
+    padding: 14px;
+  }
+}
+@media (max-width: 650px) {
+  .review-steps {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .review-steps > li {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 14px;
+  }
+  .review-step-number {
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    font-size: 12px;
+  }
+  .review-steps > li:not(:last-child)::before {
+    top: 48px;
+    left: 18px;
+    right: auto;
+    bottom: -12px;
+    border-top: 0;
+    border-left: 1px solid var(--control-line);
+  }
+  .review-step-card > svg {
+    margin-bottom: 16px;
+  }
+  .review-step-card > p {
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .how-intro {
+    text-align: left;
+  }
+  .how-intro .eyebrow,
+  .how-intro .button-row {
+    justify-content: flex-start;
+  }
+  .how-intro h1,
+  .how-intro .lead {
+    margin-inline: 0;
+  }
+}

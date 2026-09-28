@@ -14,7 +14,7 @@ export default function EmergencyGuidePage() {
         assistance.
       </Notice>
       <section className="prose-section">
-        <h2>If you sent money</h2>
+        <h2 className="text-alert">If you sent money</h2>
         <p>
           Contact your bank, card issuer, or payment provider promptly using its official app or a
           number you find independently. Explain what happened and ask whether the payment can be
@@ -33,7 +33,7 @@ export default function EmergencyGuidePage() {
         </p>
       </section>
       <section className="prose-section">
-        <h2>If you shared a password</h2>
+        <h2 className="text-alert">If you shared a password</h2>
         <p>
           Change it through the service’s official website or app. Change it on other accounts where
           you reused it, enable multi-factor authentication where available, and review active
@@ -42,7 +42,7 @@ export default function EmergencyGuidePage() {
         </p>
       </section>
       <section className="prose-section">
-        <h2>If you shared identity information</h2>
+        <h2 className="text-alert">If you shared identity information</h2>
         <p>
           Contact the issuer of the affected document or the relevant identity-protection authority
           in your country. For U.S. identity-theft guidance, visit{' '}

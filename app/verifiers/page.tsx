@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { PageIntro, TextLink } from '@/components/ui';
-export const metadata: Metadata = { title: 'Tools & roadmap' };
+export const metadata: Metadata = { title: 'Verifiers' };
 const products = [
   {
     title: 'Offer text review',
@@ -49,9 +49,9 @@ export default function VerifiersPage() {
   return (
     <main className="container page-main">
       <PageIntro
-        eyebrow="What’s here. What’s next."
-        title="Small tools. Useful perspective."
-        description="A transparent view of what Credify currently offers and what is still being developed."
+        eyebrow="The Credify toolkit"
+        title="Our Verifiers."
+        description="You found the whole toolkit. Choose a place to start, or explore what’s still taking shape."
       />
       <div className="cards-grid">
         {products.map((product) => (

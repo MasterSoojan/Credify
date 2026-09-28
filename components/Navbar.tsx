@@ -8,9 +8,9 @@ import { ArrowUpRight, Menu, Moon, ShieldCheck, Sun, X } from 'lucide-react';
 
 const navigation = [
   { href: '/job-scanner', label: 'Check an offer' },
+  { href: '/verifiers', label: 'Verifiers' },
   { href: '/how-it-works', label: 'How it works' },
   { href: '/help-center', label: 'Safety hub' },
-  { href: '/employers', label: 'For employers' },
 ];
 
 export default function Navbar() {
@@ -22,7 +22,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!open) return;
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && !event.defaultPrevented) {
         setOpen(false);
         menuButton.current?.focus();
       }
@@ -56,6 +56,7 @@ export default function Navbar() {
             className="icon-button theme-toggle"
             onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
             aria-label="Toggle color theme"
+            title="Toggle light and dark theme"
           >
             <Sun className="sun-icon" size={19} />
             <Moon className="moon-icon" size={19} />

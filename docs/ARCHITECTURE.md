@@ -38,7 +38,7 @@ The local rules do not need a remote service. Keeping them on the device avoids 
 
 Rules detect specific language and describe why it may matter. They are not a statistical classifier. The result has only `attention` and `inconclusive` states, never “safe.” Context and negation can cause false positives; unfamiliar wording and other languages can cause missed signals. These limitations are part of the result contract.
 
-The input UI owns temporary state. Results are not persisted. A review ID is generated once per submission and remains stable during rendering. A copied report is the user’s own copy, not a record in Credify’s database.
+The input UI owns temporary state. Results are not persisted. A review ID is generated once per submission and remains stable during rendering. Editing input or changing the analysis mode clears the previous report; editable fields and analysis choices are locked during a pending request. The result's **Edit input** action preserves the draft and returns focus to its field. A copied report is the user’s own copy, not a record in Credify’s database.
 
 ## Authentication boundary
 
@@ -46,7 +46,7 @@ This app uses a server-managed session, not a browser Supabase client. A Route H
 
 There are no authenticated Server Component reads, so a Proxy is unnecessary for refresh in the current architecture. Adding protected Server Components would require a deliberate refresh strategy; follow [Supabase’s SSR guidance](https://supabase.com/docs/guides/auth/server-side/creating-a-client?queryGroups=framework&framework=nextjs) and the installed Next.js Proxy/cookie documentation. Never move authorization solely into redirects or navigation guards.
 
-The paused-service flags are operational controls. They do not authorize a user. Every enabled protected API still verifies identity and relies on RLS for ownership.
+The service flags are operational controls. They do not authorize a user. Every enabled protected API still verifies identity and relies on RLS for ownership.
 
 ## Profiles and database ownership
 
@@ -66,6 +66,10 @@ The model is configurable. The legacy default is retained for existing Gemini pr
 
 ## Design system
 
-The visual language follows the original Credify identity: indigo accents on white/slate light surfaces, cyan accents on a deep-navy dark canvas, bold sans-serif headings, rounded cards, and restrained cool-colour glows. System fonts avoid build-time network dependencies. `app/globals.css` defines shared tokens, foundations, navigation, and home layout. Feature styles live in `styles/`.
+The visual language follows the restrained composition of the owner's deployed reference: white/navy surfaces, bold system typography, blue/cyan headline gradients, neutral buttons, and selective red warning text. Primary actions are charcoal `#172234` with white text in light mode and off-white `#edf2f7` with navy text in dark mode. The original `#0a0f1c` dark canvas remains. Purple action fills and lavender panels were explicitly rejected by the owner. System fonts avoid build-time network dependencies. `app/globals.css` defines shared tokens, foundations, navigation, and home layout. Feature styles live in `styles/`.
 
-Light and dark themes use the same geometry and semantic tokens. Brand/link colour is separate from action background and text, so dark-mode cyan links can coexist with readable white-on-indigo buttons. Success, warning, and danger colours describe state independently of the brand palette. Form controls use a stronger border token than decorative card dividers. Native form controls and buttons provide keyboard behavior; labels, live regions, focus handling, skip navigation, and reduced-motion rules are explicit. Small interactive components sit inside server-rendered pages. Static safety copy does not need a client boundary.
+Light and dark themes use the same geometry and semantic tokens. Brand/link colour is separate from action background and text. The highlight pair supplies decorative details; it does not communicate a verification result. Success, warning, and danger colours describe state independently of the brand palette. Fields have their own background, opaque placeholders, and stronger borders than decorative dividers. Selected scanner tabs retain their accent on hover. Native controls, labels, live regions, focus handling, skip navigation, and reduced-motion rules are explicit.
+
+`Navbar` links directly to the checker, Verifiers toolkit, walkthrough, and Safety hub; the logo returns home. The mobile disclosure closes on navigation or Escape and returns focus to its trigger on Escape. The footer retains the toolkit and assistant destinations. `OfferPreview` is a static fictional message with visible findings and a next step. `ReviewSteps` renders the shared three-stage example on home and How it works. Both examples are Server Components, require no interaction to reveal their content, and link into the actual local scanner. The home scroll link targets an accessible section below the sticky header.
+
+The [design reference](DESIGN.md) records token values, responsive behavior, component ownership, and UI review criteria. The [user guide](USER_GUIDE.md) explains these interactions from the visitor's perspective.

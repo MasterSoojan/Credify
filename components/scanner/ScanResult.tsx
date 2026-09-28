@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { CircleAlert, CircleHelp, Copy, Check, Info } from 'lucide-react';
+import { CircleAlert, CircleHelp, Copy, Check, Info, Pencil } from 'lucide-react';
 import type { ScanResult as Result } from '@/lib/verification/contracts';
 import { Button, Notice, TextLink } from '@/components/ui';
 
-export function ScanResult({ result }: { result: Result }) {
+export function ScanResult({ result, onEdit }: { result: Result; onEdit: () => void }) {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState('');
   const warning = result.status === 'attention';
@@ -45,18 +45,20 @@ export function ScanResult({ result }: { result: Result }) {
               ? 'Example · basic review'
               : 'Basic review'}
         </span>
-        <span className="small muted">
+        <time className="small muted" dateTime={result.checkedAt}>
           {new Date(result.checkedAt).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
           })}
-        </span>
+        </time>
       </div>
-      <div className={`result-heading ${warning ? 'result-warning' : ''}`}>
-        {warning ? <CircleAlert size={30} /> : <CircleHelp size={30} />}
-        <h2>{warning ? 'Worth a closer look.' : 'There’s more to verify.'}</h2>
+      <div className={`result-overview ${warning ? 'result-overview-warning' : ''}`}>
+        <div className={`result-heading ${warning ? 'result-warning' : ''}`}>
+          {warning ? <CircleAlert size={28} /> : <CircleHelp size={28} />}
+          <h2>{warning ? 'Worth a closer look.' : 'There’s more to verify.'}</h2>
+        </div>
+        <p className="result-summary">{result.summary}</p>
       </div>
-      <p className="result-summary">{result.summary}</p>
       {result.findings.length > 0 && (
         <section className="result-section">
           <h3>
@@ -96,10 +98,15 @@ export function ScanResult({ result }: { result: Result }) {
         </ul>
       </section>
       <div className="result-actions">
-        <Button variant="secondary" onClick={copyReport}>
-          {copied ? <Check size={16} /> : <Copy size={16} />}
-          {copied ? 'Report copied' : 'Copy report'}
-        </Button>
+        <div className="button-row">
+          <Button variant="secondary" onClick={copyReport}>
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+            {copied ? 'Report copied' : 'Copy report'}
+          </Button>
+          <Button variant="quiet" onClick={onEdit}>
+            <Pencil size={16} /> Edit input
+          </Button>
+        </div>
         <TextLink href="/emergency-guide">Need help now?</TextLink>
       </div>
       <div aria-live="polite" className="small muted">

@@ -1,0 +1,60 @@
+.preview-next {
+  margin-block: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.preview-next strong {
+  display: block;
+  color: var(--highlight);
+  margin-bottom: 4px;
+}
+.sample-email .payment-highlight,
+.sample-result .status-icon {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.sample-result strong {
+  color: var(--danger);
+}
+.preview-demo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  color: var(--brand);
+  font-weight: 600;
+  font-size: 13px;
+}
+.preview-demo:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.preview-caption {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+  margin-top: 14px;
+}
+.hero .hero-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.hero-scroll:hover {
+  color: var(--brand);
+}
+.hero-scroll svg {
+  border: 1px solid var(--control-line);
+  border-radius: 50%;
+  padding: 7px;
+  width: 32px;
+  height: 32px;
+}

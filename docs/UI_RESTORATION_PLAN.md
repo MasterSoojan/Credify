@@ -1,6 +1,8 @@
 # Restore Credify's original visual identity
 
-Prepared and implemented September 28, 2026. **Status: complete.** Local checkpoint `4d0e300` preserves the green/cream UI; the original visual identity has been restored in the following change. Both commits remain local until the owner pushes.
+Prepared and implemented September 28, 2026. **Status: complete.** Local checkpoint `4d0e300` preserves the green/cream UI; the original visual identity has been restored in the following change. The owner has authorized pushing these checkpoints with the final UI handoff.
+
+This is a historical plan. Later colour and usability refinements are documented in [DESIGN.md](DESIGN.md) and [STATUS.md](STATUS.md). Its checkpoint/commit steps have already been completed; the latest owner instruction authorizes committing and pushing the completed refinements with a detailed message.
 
 ## Objective and reference
 

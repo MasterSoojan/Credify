@@ -1,4 +1,10 @@
 import type { Metadata, Viewport } from 'next';
+// Let Next track local styles directly; preserve feature-before-foundation cascade order.
+import '@/styles/scanner.css';
+import '@/styles/account.css';
+import '@/styles/content.css';
+import '@/styles/home-preview.css';
+import '@/styles/review-steps.css';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -14,7 +20,7 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f8fafc' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0f1c' },
   ],
 };

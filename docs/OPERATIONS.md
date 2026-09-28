@@ -4,7 +4,7 @@
 
 **Local/offline core:** all three service flags are false. No Supabase or Gemini key is needed to build the app, render the core pages, or run basic checks. The reading feed is an optional server-side fetch with a short timeout and a visible fallback.
 
-**Connected services:** explicitly enable each service after configuring and verifying it. Hosted Supabase is currently paused. Preparing configuration and local migrations does not resume it; do not enable hosted services until the owner is ready and the release checks below pass.
+**Connected services:** explicitly enable each service after configuring and verifying it. Supabase is the intended account and registry backend. Product copy assumes connected operation; runtime flags still reflect configured dependencies. Complete the release checks below for the target environment.
 
 ## Environment reference
 
@@ -47,7 +47,7 @@ The legacy migrations create example companies. The forward hardening migration 
 ## Hosted migration sequence
 
 1. Keep account, registry, and AI flags off while preparing the environment.
-2. Once the hosted project is resumed, inspect its applied migrations, actual policies/grants, profile uniqueness, and any schema drift. Existing deployments may differ from this repository.
+2. Inspect the target project’s applied migrations, actual policies/grants, profile uniqueness, and any schema drift. Existing deployments may differ from this repository.
 3. Back up the database. Rehearse the upgrade against a restored isolated database, including existing Auth users and profiles. Resolve any duplicate/corrupt legacy identities before applying the new constraints or backfill.
 4. Apply **new** migrations in order. Do not reapply the original public-policy migration to a live database. Do not treat a passing local policy test as proof that hosted grants match.
 5. Verify anonymous and two-user access using the actual API roles. Confirm new signup provisioning and the Auth/profile deletion cascade.
@@ -63,6 +63,8 @@ Copy `supabase/templates/confirmation.html` and `supabase/templates/recovery.htm
 The confirmation endpoint only accepts `signup` and `recovery`. It verifies the one-time token with Auth. A recovery link creates a signed 15-minute capability bound to the current user and access token, then redirects to `/reset-password/update`. A normal PKCE callback only signs in; a caller-supplied `next` value cannot grant recovery permission. Expired/consumed links return to a clear error state. Email-security scanners can consume one-time links; test the actual mail provider and avoid link rewriting where possible. See [Supabase’s email template guidance](https://supabase.com/docs/guides/auth/auth-email-templates).
 
 ## Build and deployment
+
+For repository contents, owner-controlled commits, source archives, and website deployment, start with [UPLOAD.md](UPLOAD.md). That guide links back here for connected-service setup.
 
 ```bash
 npm ci

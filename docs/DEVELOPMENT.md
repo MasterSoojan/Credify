@@ -46,7 +46,8 @@ Cookie-authenticated custom mutation routes require an Origin matching `SITE_URL
 - Add a client boundary only for state, events, or browser APIs.
 - Reuse `Button`, `ButtonLink`, `Field`, `Notice`, `PageIntro`, and `TextLink` when they fit.
 - Use `InformationPage` for an article with the shared sidebar. Keep the article itself explicit in its route; a CMS abstraction is not needed yet.
-- Define colors through semantic CSS tokens. Add feature-specific styles in `styles/` instead of another long set of inline design decisions.
+- Define colors through semantic CSS tokens. Add feature-specific styles in `styles/` instead of another long set of inline design decisions. Import local styles from `app/layout.tsx` so Next tracks them directly; keep their existing order before `globals.css`. Leave only the Tailwind package import in `globals.css`.
+- Follow [DESIGN.md](DESIGN.md) for palette roles, responsive layouts, and interaction requirements. In the scanner, invalidate results when their input changes and keep focus transitions working.
 - Use real links for navigation, buttons for actions, and associated labels for fields. A clickable div is not an accessible button.
 - Include empty, loading, error, cancelled, unavailable, and success states where relevant.
 - Give every visible action a destination or behavior. Do not add a payment, download, approval, or “verified” claim before it exists.
@@ -72,6 +73,8 @@ When behavior changes, update its nearest documentation:
 | Trust boundary / data retention | `SECURITY.md`, `ARCHITECTURE.md`, relevant product copy            |
 | New command or test             | `README.md`, `TESTING.md`, CI                                      |
 | Product availability            | `STATUS.md`, roadmap/help pages                                    |
+| UI roles and interaction        | `DESIGN.md`, `USER_GUIDE.md`, screenshots in `STATUS.md`           |
+| Upload or handoff process       | `UPLOAD.md`, `README.md`                                           |
 
 ## Deliberate simplicity
 

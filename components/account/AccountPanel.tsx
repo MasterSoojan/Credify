@@ -74,7 +74,7 @@ export function AccountPanel({
   if (!available)
     return (
       <div className="card stack content-width">
-        <Notice title="Account services are currently paused.">
+        <Notice title="Account services are unavailable right now.">
           Your profile and security settings will be available when account services return. You can
           still review an offer without signing in.
         </Notice>
