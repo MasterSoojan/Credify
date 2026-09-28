@@ -1,6 +1,6 @@
 # Credify implementation plan
 
-**Next planned work:** [Restore the original UI and colours](docs/UI_RESTORATION_PLAN.md). The owner requested this on 2026-09-28; execution starts after preserving the current changes in a local commit; the owner will push after the visual restoration. The new plan preserves the implementation improvements and uses the original indigo/cyan/slate UI as its visual reference.
+**Visual follow-up:** [Restore the original UI and colours](docs/UI_RESTORATION_PLAN.md). Implemented on 2026-09-28 after preserving the green/cream UI in local checkpoint `4d0e300`. The original indigo/cyan/slate identity is restored on the improved application. The owner will push the commits later.
 
 This is the **historical audit and proposed sequence** prepared on 2026-09-27, before the implementation. The findings below describe the original code, not the current application. The owner subsequently authorized the redesign and implementation. See [delivery status](docs/STATUS.md) for what was delivered, current validation, deliberate scope decisions, and remaining release gates. Original estimates are planning estimates, not recorded effort.
 

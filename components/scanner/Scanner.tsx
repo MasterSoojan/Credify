@@ -402,7 +402,7 @@ export function Scanner({
           <h2>
             Pause. Check.
             <br />
-            <span className="serif">Then decide.</span>
+            <span className="heading-accent">Then decide.</span>
           </h2>
           <p>You don’t have to figure it all out at once. Start with what feels uncertain.</p>
           <ul>

@@ -31,7 +31,7 @@ Employer verification is a separate concern from content review. A company recor
 
 ## Maintenance
 
-Owner preference, September 28, 2026: preserve the previous UI, especially its colours. The next task is [restoring the original indigo/cyan/slate visual identity](docs/UI_RESTORATION_PLAN.md), using commit `d077f90fb891148d9a56132044786d71c2a34a79` as the reference. First preserve the current UI in a local checkpoint commit, then implement the restoration. The owner will push both changes later. Retain the improved architecture, functionality, accessibility, and security boundaries.
+Owner preference, September 28, 2026: preserve the original UI's colours and visual identity. The green/cream implementation is preserved in local checkpoint `4d0e300`. The [visual restoration](docs/UI_RESTORATION_PLAN.md) returns indigo/cyan accents, slate surfaces, navy `#0A0F1C`, and bold sans-serif headings using `d077f90fb891148d9a56132044786d71c2a34a79` as reference. Retain this identity alongside the improved architecture, functionality, accessibility, and security boundaries. Pushing remains the owner's next step.
 
 Read `docs/DEVELOPMENT.md` before adding features. Prefer existing UI primitives and semantic CSS tokens. Keep comments focused on constraints and reasons; avoid comments that simply restate the next line.
 

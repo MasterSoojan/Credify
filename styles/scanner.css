@@ -7,7 +7,7 @@
 }
 .scanner-workspace {
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 24px;
   background: var(--surface);
   overflow: hidden;
 }
@@ -40,7 +40,7 @@
   font-size: 12px;
   font-weight: 600;
   padding: 12px 8px;
-  border-radius: 7px;
+  border-radius: 12px;
   border: 1px solid transparent;
   color: var(--muted);
   background: transparent;
@@ -101,7 +101,7 @@
 .sidebar-note h2 {
   font-size: 31px;
   margin: 22px 0 16px;
-  font-weight: 500;
+  font-weight: 700;
 }
 .sidebar-note > p {
   font-size: 12px;
@@ -223,7 +223,7 @@
 }
 .result-heading h2 {
   font-size: 27px;
-  font-weight: 500;
+  font-weight: 700;
 }
 .result-warning > svg {
   color: var(--warning);

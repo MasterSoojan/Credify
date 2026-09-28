@@ -71,7 +71,7 @@ export default function HomePage() {
               <br />
               Small doubt?
               <br />
-              <em>Let’s take a look.</em>
+              <span className="heading-accent">Let’s take a look.</span>
             </h1>
             <p className="lead">
               A promising job offer should bring excitement, not uncertainty. Get a second
@@ -223,7 +223,7 @@ export default function HomePage() {
           <h2>
             Trust starts with
             <br />
-            <span className="serif">being transparent.</span>
+            <span className="heading-accent">being transparent.</span>
           </h2>
           <p className="lead">
             No magic safety score. No promise that a green check makes everything okay. Just useful

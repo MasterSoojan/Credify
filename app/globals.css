@@ -7,40 +7,49 @@
 
 /* Semantic tokens keep component styles independent of the selected color scheme. */
 :root {
-  --canvas: #f8faf7;
+  --canvas: var(--color-slate-50);
   --surface: #fff;
-  --surface-soft: #f0f4ee;
-  --ink: #18332b;
-  --muted: #607168;
-  --line: #dbe3d9;
-  --brand: #246b50;
-  --brand-hover: #18543d;
-  --brand-soft: #eaf2e7;
-  --accent: #d9e8b5;
-  --warning: #855516;
-  --warning-soft: #fff6e6;
-  --danger: #a13934;
-  --danger-soft: #fdefed;
-  --shadow: 0 20px 60px -32px #15332440;
+  --surface-soft: var(--color-slate-100);
+  --ink: var(--color-slate-900);
+  --muted: var(--color-slate-600);
+  --line: var(--color-slate-200);
+  --control-line: var(--color-slate-500);
+  --brand: var(--color-indigo-600);
+  --brand-soft: var(--color-indigo-50);
+  --accent: var(--color-indigo-100);
+  /* Actions retain white-on-indigo contrast while dark-mode links use cyan. */
+  --action: var(--color-indigo-600);
+  --action-hover: var(--color-indigo-700);
+  --on-action: #fff;
+  --success: var(--color-emerald-700);
+  --success-soft: var(--color-emerald-50);
+  --warning: var(--color-amber-800);
+  --warning-soft: var(--color-amber-50);
+  --danger: var(--color-rose-700);
+  --danger-soft: var(--color-rose-50);
+  --shadow: 0 20px 60px -32px color-mix(in srgb, var(--color-slate-900), transparent 70%);
   --background: var(--canvas);
   --foreground: var(--ink);
   color-scheme: light;
 }
 .dark {
-  --canvas: #111b18;
-  --surface: #192720;
-  --surface-soft: #21332a;
-  --ink: #e9f0e5;
-  --muted: #a6b7a9;
-  --line: #354b3c;
-  --brand: #add3a8;
-  --brand-hover: #c3e6bf;
-  --brand-soft: #263e2e;
-  --accent: #3f583a;
-  --warning: #e6bd79;
-  --warning-soft: #362d1e;
-  --danger: #f0aaa3;
-  --danger-soft: #3c2725;
+  /* Original Credify page background; slate cards provide the surface hierarchy. */
+  --canvas: #0a0f1c;
+  --surface: var(--color-slate-900);
+  --surface-soft: var(--color-slate-800);
+  --ink: var(--color-slate-100);
+  --muted: var(--color-slate-400);
+  --line: var(--color-slate-700);
+  --control-line: var(--color-slate-500);
+  --brand: var(--color-cyan-400);
+  --brand-soft: color-mix(in srgb, var(--color-cyan-950) 45%, var(--surface));
+  --accent: var(--color-cyan-900);
+  --success: var(--color-emerald-300);
+  --success-soft: color-mix(in srgb, var(--color-emerald-950) 55%, var(--surface));
+  --warning: var(--color-amber-300);
+  --warning-soft: color-mix(in srgb, var(--color-amber-950) 55%, var(--surface));
+  --danger: var(--color-rose-300);
+  --danger-soft: color-mix(in srgb, var(--color-rose-950) 55%, var(--surface));
   --shadow: 0 20px 60px -32px #000;
   color-scheme: dark;
 }
@@ -109,6 +118,7 @@ h2,
 h3 {
   line-height: 1.15;
   letter-spacing: -0.035em;
+  font-weight: 800;
 }
 svg {
   flex-shrink: 0;
@@ -134,7 +144,8 @@ svg {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--canvas);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
 }
 .header-inner {
@@ -151,7 +162,7 @@ svg {
   align-items: center;
   gap: 9px;
   font-size: 27px;
-  font-weight: 750;
+  font-weight: 900;
   letter-spacing: -1.3px;
   line-height: 1;
 }
@@ -160,14 +171,11 @@ svg {
   margin-left: -9px;
 }
 .brand-mark {
-  width: 37px;
+  width: 30px;
   height: 40px;
   display: grid;
   place-items: center;
-  background: var(--brand);
-  color: var(--canvas);
-  border-radius: 12px 12px 15px 15px;
-  margin-right: 2px;
+  color: var(--brand);
 }
 .desktop-nav {
   display: flex;
@@ -210,7 +218,7 @@ svg {
   height: 40px;
   display: inline-grid;
   place-items: center;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 50%;
   background: transparent;
   color: var(--ink);
@@ -236,9 +244,9 @@ svg {
   justify-content: center;
   gap: 10px;
   padding: 12px 22px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid transparent;
   transition:
     background 0.15s,
@@ -247,16 +255,16 @@ svg {
   line-height: 1.4;
 }
 .button-primary {
-  background: var(--brand);
-  color: var(--canvas);
+  background: var(--action);
+  color: var(--on-action);
 }
 .button-primary:hover {
-  background: var(--brand-hover);
+  background: var(--action-hover);
 }
 .button-secondary {
   background: var(--surface);
   color: var(--ink);
-  border-color: var(--line);
+  border-color: var(--control-line);
 }
 .button-secondary:hover,
 .button-quiet:hover {
@@ -294,9 +302,8 @@ svg {
   background: var(--brand);
   border-radius: 50%;
 }
-.serif {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 400;
+.heading-accent {
+  color: var(--brand);
 }
 .lead {
   color: var(--muted);
@@ -318,6 +325,26 @@ svg {
 }
 .hero {
   padding-block: 84px 70px;
+  position: relative;
+  isolation: isolate;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse closest-side at 28% 32%,
+      color-mix(in srgb, var(--brand) 12%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      ellipse closest-side at 78% 70%,
+      color-mix(in srgb, var(--action) 10%, transparent),
+      transparent
+    );
 }
 .hero-grid {
   display: grid;
@@ -329,13 +356,8 @@ svg {
   font-size: clamp(42px, 4.6vw, 64px);
   line-height: 1.06;
   margin: 25px 0 24px;
-  font-weight: 550;
+  font-weight: 900;
   letter-spacing: -0.05em;
-}
-.hero h1 em {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 400;
-  color: var(--brand);
 }
 .hero .lead {
   max-width: 450px;
@@ -365,11 +387,10 @@ svg {
 }
 .sample-card {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 24px;
   background: var(--surface);
   box-shadow: var(--shadow);
   overflow: hidden;
-  transform: rotate(-2deg);
 }
 .sample-card-top {
   padding: 17px 22px;
@@ -415,8 +436,8 @@ svg {
   margin-bottom: 5px;
 }
 mark {
-  background: #fbe6bb;
-  color: #6e4c1e;
+  background: var(--warning-soft);
+  color: var(--warning);
   padding: 2px 4px;
   border-radius: 3px;
 }
@@ -468,12 +489,11 @@ mark {
   padding: 14px 18px;
   border: 1px solid var(--line);
   background: var(--brand-soft);
-  border-radius: 9px;
+  border-radius: 12px;
   box-shadow: var(--shadow);
   display: flex;
   align-items: center;
   gap: 10px;
-  transform: rotate(2deg);
   font-size: 11px;
   color: var(--ink);
 }
@@ -508,7 +528,7 @@ mark {
 .section-heading h2 {
   font-size: 35px;
   margin-top: 12px;
-  font-weight: 500;
+  font-weight: 800;
 }
 .section-heading > p {
   color: var(--muted);
@@ -524,7 +544,7 @@ mark {
   padding: 29px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -541,7 +561,7 @@ mark {
 }
 .feature-card h3 {
   font-size: 19px;
-  font-weight: 550;
+  font-weight: 700;
   margin-bottom: 12px;
 }
 .feature-card p {
@@ -564,7 +584,7 @@ mark {
   padding-top: 14px;
 }
 .step-number {
-  font-family: Georgia, serif;
+  font-weight: 800;
   font-size: 32px;
   color: var(--brand);
   display: block;
@@ -575,7 +595,7 @@ mark {
 .steps-grid h3 {
   font-size: 18px;
   margin-bottom: 10px;
-  font-weight: 550;
+  font-weight: 700;
 }
 .steps-grid p {
   font-size: 13px;
@@ -590,7 +610,7 @@ mark {
 }
 .split-section h2 {
   font-size: 38px;
-  font-weight: 500;
+  font-weight: 800;
   margin: 15px 0 20px;
 }
 .split-section .lead {
@@ -634,14 +654,14 @@ mark {
   align-items: center;
   gap: 40px;
   padding: 38px 45px;
-  border-radius: 14px;
+  border-radius: 24px;
   background: var(--brand-soft);
   border: 1px solid var(--line);
   margin-bottom: 75px;
 }
 .cta-panel h2 {
   font-size: 30px;
-  font-weight: 500;
+  font-weight: 800;
   margin-bottom: 9px;
 }
 .cta-panel p {
@@ -649,9 +669,19 @@ mark {
   font-size: 14px;
 }
 .site-footer {
+  position: relative;
   border-top: 1px solid var(--line);
   padding: 55px 0 22px;
   background: var(--surface);
+}
+.site-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  opacity: 0.4;
+  pointer-events: none;
 }
 .footer-top {
   display: grid;
@@ -713,7 +743,7 @@ mark {
 }
 .page-intro h1 {
   font-size: clamp(32px, 4vw, 48px);
-  font-weight: 500;
+  font-weight: 800;
   margin: 15px 0;
 }
 .page-intro .lead {
@@ -754,8 +784,8 @@ mark {
   border-color: color-mix(in srgb, var(--danger), transparent 75%);
 }
 .notice-success {
-  background: var(--brand-soft);
-  color: var(--brand);
+  background: var(--success-soft);
+  color: var(--success);
 }
 .field {
   display: flex;
@@ -772,8 +802,8 @@ mark {
 }
 .input {
   width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--control-line);
+  border-radius: 12px;
   background: var(--canvas);
   color: var(--ink);
   padding: 13px 15px;
@@ -804,7 +834,7 @@ textarea.input {
 }
 .card {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 20px;
   background: var(--surface);
   padding: 28px;
 }
@@ -829,7 +859,7 @@ textarea.input {
 }
 .prose-section h2 {
   font-size: 23px;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 16px;
 }
 .prose-section p,

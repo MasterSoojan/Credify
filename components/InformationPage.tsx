@@ -26,7 +26,7 @@ export function InformationPage({
           <h2>
             A second look
             <br />
-            <span className="serif">can help.</span>
+            <span className="heading-accent">can help.</span>
           </h2>
           <p>Start with the message or link that raised a question.</p>
           <TextLink href="/job-scanner">Check an offer</TextLink>

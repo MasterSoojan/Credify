@@ -149,7 +149,7 @@ export function AuthForm({
         <h1>
           Your next chapter.
           <br />
-          <span className="serif">On your terms.</span>
+          <span className="heading-accent">On your terms.</span>
         </h1>
         <p>
           A thoughtful pause can make all the difference. Take your time, ask questions, and keep

@@ -36,9 +36,9 @@ export default function Footer() {
           <div className="footer-brand">
             <Link className="brand" href="/">
               <span className="brand-mark">
-                <ShieldCheck size={23} />
+                <ShieldCheck size={28} />
               </span>
-              credify<span className="brand-dot">.</span>
+              Credify<span className="brand-dot">.</span>
             </Link>
             <p>
               A little clarity.

@@ -12,7 +12,7 @@
 }
 .auth-story h1 {
   font-size: 46px;
-  font-weight: 500;
+  font-weight: 700;
   margin: 25px 0;
 }
 .auth-story > p:not(.eyebrow) {
@@ -34,14 +34,14 @@
 }
 .auth-card {
   border: 1px solid var(--line);
-  border-radius: 15px;
+  border-radius: 24px;
   padding: 36px;
   background: var(--surface);
   box-shadow: var(--shadow);
 }
 .auth-card h2 {
   font-size: 28px;
-  font-weight: 500;
+  font-weight: 700;
   margin: 15px 0 12px;
 }
 .auth-card .eyebrow {
@@ -136,7 +136,7 @@
 }
 .account-layout h2 {
   font-size: 23px;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 9px;
 }
 .danger-zone summary {

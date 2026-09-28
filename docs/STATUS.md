@@ -1,6 +1,16 @@
 # Delivery record
 
-Updated September 27, 2026. This records the implemented repository and observed checks, not a claim that hosted integrations have been deployed or verified. The original audit remains in [IMPLEMENTATION_PLAN.md](../IMPLEMENTATION_PLAN.md).
+Updated September 28, 2026. This records the implemented repository and observed checks, not a claim that hosted integrations have been deployed or verified. The original audit remains in [IMPLEMENTATION_PLAN.md](../IMPLEMENTATION_PLAN.md).
+
+## Visual restoration — September 28, 2026
+
+Local checkpoint `4d0e300` preserves the complete green/cream implementation with its detailed commit message. The follow-up restores the original indigo/cyan/slate identity from `d077f90`, including navy `#0A0F1C`, bold sans-serif headings, the shield and `Credify.` wordmark, rounded cards, app/browser colours, and restrained decorative glows. The current working page flows and honest content remain intact. No API, provider, authentication, or database logic changed in this visual pass.
+
+The default production build, lint, TypeScript, all 73 unit/API/PostgreSQL tests, and all 12 production browser tests passed again. An additional local browser review exercised eight page/result states at 375, 768, and 1440 pixels in both themes (48 combinations), with no horizontal overflow, page errors, or axe WCAG 2 A/AA and 2.1 AA violations. System-theme selection and manual override persistence passed in both directions. Final checks also passed for 320-pixel layouts, keyboard skip navigation, and visible scanner error states in both themes. These additional checks were a one-off review using the existing tools, not 48 new committed tests.
+
+Measured solid-colour foreground/background pairs: primary action text 6.46:1 in both themes; body text 17.04:1 light / 17.46:1 dark; muted text 7.25:1 light / 7.27:1 dark; brand accent 6.18:1 light / 10.56:1 dark against the page canvas. These measurements cover the named pairs, not every possible combination or a complete accessibility certification.
+
+The local checkpoint and visual restoration can be pushed together. No push, deployment, or hosted-service change was performed.
 
 ## Delivered
 
@@ -31,7 +41,7 @@ Tests used mocked providers and embedded PostgreSQL policy evaluation. They made
 
 ## Visual review
 
-The production UI was inspected at desktop and mobile sizes in light and dark themes. Saved review images: [desktop home](images/home-desktop.png) and [dark mobile scanner](images/scanner-mobile-dark.png). Local production smoke checks found no browser page errors or mobile horizontal overflow. The served-header regression test verifies the authentication redirect policy at the HTTP boundary.
+The production UI was inspected at desktop and mobile sizes in light and dark themes. Saved review images: [light desktop home](images/home-desktop.png), [dark desktop home](images/home-desktop-dark.png), [dark mobile home](images/home-mobile-dark.png), and [dark mobile scanner](images/scanner-mobile-dark.png). The earlier green/cream images remain available in checkpoint `4d0e300`. Local production smoke checks found no browser page errors or mobile horizontal overflow. The served-header regression test verifies the authentication redirect policy at the HTTP boundary.
 
 ## Implementation decisions after the original plan
 

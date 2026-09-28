@@ -1,6 +1,6 @@
 # Restore Credify's original visual identity
 
-Prepared September 28, 2026. **Status: planned after a local checkpoint commit.** The owner confirmed that pushing can wait until the visual restoration is complete. This document does not change the running UI.
+Prepared and implemented September 28, 2026. **Status: complete.** Local checkpoint `4d0e300` preserves the green/cream UI; the original visual identity has been restored in the following change. Both commits remain local until the owner pushes.
 
 ## Objective and reference
 
@@ -106,4 +106,10 @@ Acceptance criteria:
 - Application behaviour and the previously established security boundaries remain intact.
 - The current implementation is preserved as a local checkpoint commit, and this restoration is reviewable as a separate subsequent change.
 
-No visual implementation has started. The owner authorized creating the local checkpoint first, then restoring the original visual identity. Both commits can be pushed together later.
+## Delivery
+
+Implemented the original indigo/cyan/slate palette, navy page canvas, bold sans-serif headings, shield/wordmark treatment, rounded cards, app icon, browser theme colours, and subtle decorative glows. Brand links, primary actions, form boundaries, and semantic status colours have separate roles.
+
+The improved page content and working form/result layouts were retained while restoring the visual identity. This is a visual adaptation of the original reference; obsolete widgets and unsupported claims were not restored. The original source was used as the reference; a separate old-app runtime was unnecessary.
+
+The local checkpoint is `4d0e300`. Validation and current screenshots are recorded in [STATUS.md](STATUS.md). Pushing was intentionally deferred to the owner.

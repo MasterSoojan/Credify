@@ -66,6 +66,6 @@ The model is configurable. The legacy default is retained for existing Gemini pr
 
 ## Design system
 
-The visual language uses calm green, warm neutral surfaces, restrained borders, and a serif accent for editorial headings. System fonts avoid build-time network dependencies. `app/globals.css` defines shared tokens, foundations, navigation, and home layout. Feature styles live in `styles/`.
+The visual language follows the original Credify identity: indigo accents on white/slate light surfaces, cyan accents on a deep-navy dark canvas, bold sans-serif headings, rounded cards, and restrained cool-colour glows. System fonts avoid build-time network dependencies. `app/globals.css` defines shared tokens, foundations, navigation, and home layout. Feature styles live in `styles/`.
 
-Light and dark themes use the same geometry and semantic tokens. Native form controls and buttons provide keyboard behavior; labels, live regions, focus handling, skip navigation, and reduced-motion rules are explicit. Small interactive components sit inside server-rendered pages. Static safety copy does not need a client boundary.
+Light and dark themes use the same geometry and semantic tokens. Brand/link colour is separate from action background and text, so dark-mode cyan links can coexist with readable white-on-indigo buttons. Success, warning, and danger colours describe state independently of the brand palette. Form controls use a stronger border token than decorative card dividers. Native form controls and buttons provide keyboard behavior; labels, live regions, focus handling, skip navigation, and reduced-motion rules are explicit. Small interactive components sit inside server-rendered pages. Static safety copy does not need a client boundary.

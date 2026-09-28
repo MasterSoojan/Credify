@@ -36,9 +36,9 @@ export default function Navbar() {
       <div className="header-inner">
         <Link href="/" className="brand" aria-label="Credify home" onClick={() => setOpen(false)}>
           <span className="brand-mark">
-            <ShieldCheck size={23} strokeWidth={1.8} />
+            <ShieldCheck size={28} strokeWidth={2} />
           </span>
-          credify<span className="brand-dot">.</span>
+          Credify<span className="brand-dot">.</span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           {navigation.map((item) => (
