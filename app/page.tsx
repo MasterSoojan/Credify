@@ -1,128 +1,260 @@
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-import { 
-  ShieldCheck, Zap, CheckCircle2, XCircle
+import {
+  ArrowRight,
+  FileText,
+  Mail,
+  Link2,
+  LockKeyhole,
+  Eye,
+  BadgeHelp,
+  CircleAlert,
+  ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
-import HeroWidget from '../components/home/HeroWidget';
-import Pricing from '../components/home/Pricing';
-import FAQ from '../components/home/FAQ';
+import { ButtonLink, TextLink } from '@/components/ui';
 
-export default function Home() {
-  const [viewState, setViewState] = useState<'with' | 'without'>('without');
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+const tools = [
+  {
+    icon: FileText,
+    title: 'Read between the lines.',
+    description:
+      'Paste a job offer or recruiter message. Spot language that deserves a second look, with an explanation for each signal.',
+    href: '/job-scanner',
+    action: 'Review an offer',
+  },
+  {
+    icon: Mail,
+    title: 'Meet the actual sender.',
+    description:
+      'Examine a recruiter’s email domain and learn what an address can — and cannot — tell you about their identity.',
+    href: '/job-scanner?type=email',
+    action: 'Check an email',
+  },
+  {
+    icon: Link2,
+    title: 'Look before you click.',
+    description:
+      'Inspect a link’s structure without opening the website. Understand the domain and the limits of a basic check.',
+    href: '/instant-verify',
+    action: 'Inspect a link',
+  },
+];
+const faqs = [
+  [
+    'Can Credify tell me if an offer is definitely safe?',
+    'No. A review can help you notice warning signs, but it cannot guarantee legitimacy. Always confirm the role and recruiter through a company channel you find independently.',
+  ],
+  [
+    'Do I need an account to check an offer?',
+    'No account is needed for basic text, email, and link checks. These checks use local rules and do not call an AI provider. Optional AI document analysis requires an available account service and your consent.',
+  ],
+  [
+    'What happens to the information I submit?',
+    'Basic checks run in your browser and are not saved by Credify. If you choose available AI analysis, the submitted content is sent to our server and Google Gemini for processing. Remove unnecessary personal information first.',
+  ],
+  [
+    'What if I have already sent money or documents?',
+    'You still have options. Our emergency guide helps you organize immediate next steps, preserve evidence, and find the right official support channels.',
+  ],
+];
 
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-[#0A0F1C] text-slate-900 dark:text-slate-200 pt-32 pb-20 relative overflow-hidden transition-colors duration-300">
-      
-      {/* Background Glows */}
-      <div className="absolute top-20 left-[-10%] w-[40%] h-[500px] bg-blue-500/10 dark:bg-cyan-900/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[400px] bg-indigo-500/10 dark:bg-blue-900/20 blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
-        {/* --- HERO & WIDGET SECTION --- */}
-        <HeroWidget />
-
-        {/* --- TRUST GAP STATS --- */}
-        <div className="mb-40 pt-20 border-t border-slate-100 dark:border-slate-800">
-          <h2 className="text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-4 transition-colors">
-            The trust gap is <br/><span className="text-slate-400 dark:text-slate-500">costing you hires.</span>
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-16 max-w-2xl text-lg transition-colors">
-            Sophisticated candidates are suspicious of every message. If they can't verify you in 5 seconds, they ignore the offer.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 transition-colors shadow-sm dark:shadow-none">
-              <h3 className="text-5xl font-black text-slate-900 dark:text-white mb-4 transition-colors">40%</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium leading-relaxed transition-colors">of candidates ignore recruiter messages out of scam fear.</p>
-            </div>
-            <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 transition-colors shadow-sm dark:shadow-none">
-              <h3 className="text-5xl font-black text-slate-900 dark:text-white mb-4 transition-colors">1 in 8</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium leading-relaxed transition-colors">job offers online is fraudulent in Southeast Asia.</p>
-            </div>
-            <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 transition-colors shadow-sm dark:shadow-none">
-              <h3 className="text-5xl font-black text-slate-900 dark:text-white mb-4 transition-colors">5 sec</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium leading-relaxed transition-colors">is all it takes a candidate to verify with a Verification Link.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* --- FEATURES (Verifiable Link) --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-40">
-          <div className="lg:col-span-1 space-y-4">
-            <button className="text-left w-full px-4 py-3 bg-white dark:bg-slate-800/50 text-indigo-600 dark:text-white font-bold rounded-lg border border-indigo-100 dark:border-slate-700 text-sm shadow-sm dark:shadow-none transition-all">Verifiable Identity Link</button>
-            <button className="text-left w-full px-4 py-3 text-slate-500 hover:text-indigo-600 dark:hover:text-slate-300 font-bold rounded-lg text-sm transition-colors">Domain Protection</button>
-            <button className="text-left w-full px-4 py-3 text-slate-500 hover:text-indigo-600 dark:hover:text-slate-300 font-bold rounded-lg text-sm transition-colors">Instant Staff Lookup</button>
-            <button className="text-left w-full px-4 py-3 text-slate-500 hover:text-indigo-600 dark:hover:text-slate-300 font-bold rounded-lg text-sm transition-colors">Works Everywhere</button>
-          </div>
-
-          <div className="lg:col-span-3 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 md:p-12 shadow-sm dark:shadow-none transition-colors">
-            <div className="flex items-center gap-3 text-indigo-600 dark:text-cyan-400 mb-6 transition-colors">
-              <ShieldCheck size={24} /> <span className="font-bold tracking-widest text-[10px] uppercase">Core Feature</span>
-            </div>
-            <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4 transition-colors">Verifiable Identity Link</h3>
-            <p className="text-indigo-600 dark:text-cyan-400 font-bold text-sm mb-6 transition-colors">One URL. Every channel. Instant trust.</p>
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-10 max-w-2xl transition-colors">
-              A single, permanent URL (credify.app/verify/your-brand) that candidates check in under 5 seconds. Share it in every email signature, LinkedIn message, and job posting. When candidates click it, they land on your verified company page — not a look-alike.
+    <main>
+      <section className="hero container">
+        <div className="hero-grid">
+          <div>
+            <p className="eyebrow">
+              <span />A clearer path to your next opportunity
             </p>
-
-            <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-6 font-mono text-sm space-y-6 shadow-inner transition-colors">
-              <div>
-                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-1 transition-colors">
-                  <CheckCircle2 size={16} /> credify.app/verify/acme-recruiting
-                </div>
-                <div className="text-slate-400 dark:text-slate-500 text-xs ml-6 transition-colors">Verified company profile</div>
+            <h1>
+              Big opportunity.
+              <br />
+              Small doubt?
+              <br />
+              <em>Let’s take a look.</em>
+            </h1>
+            <p className="lead">
+              A promising job offer should bring excitement, not uncertainty. Get a second
+              perspective before you take the next step.
+            </p>
+            <div className="button-row">
+              <ButtonLink href="/job-scanner">
+                Check an offer <ArrowRight size={17} />
+              </ButtonLink>
+              <ButtonLink href="/demo" variant="secondary">
+                Try an example
+              </ButtonLink>
+            </div>
+            <p className="hero-note">
+              <LockKeyhole size={13} />
+              Free basic checks. No sign-up. Your text stays in your browser.
+            </p>
+          </div>
+          <div className="hero-visual" aria-label="Illustrative offer review">
+            <div className="sample-card">
+              <div className="sample-card-top">
+                <span>
+                  <FileText size={16} />
+                  Your offer, a little clearer
+                </span>
+                <span className="sample-label">Example review</span>
               </div>
-              <div className="border-t border-slate-100 dark:border-slate-800 pt-4 transition-colors">
-                <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 mb-1 transition-colors">
-                  <XCircle size={16} /> acme-recruiting-jobs.xyz
+              <div className="sample-body">
+                <div className="sample-email">
+                  <strong>Subject: Your next chapter starts here</strong>Congratulations! You have
+                  been selected for the role.
+                  <br />
+                  Please pay a <mark>registration fee</mark> to secure your position.
+                  <br />
+                  Reply <mark>within 2 hours</mark> to confirm.
                 </div>
-                <div className="text-slate-400 dark:text-slate-500 text-xs ml-6 transition-colors">Impersonator detected</div>
+                <div className="sample-result">
+                  <span className="status-icon">
+                    <CircleAlert size={22} />
+                  </span>
+                  <div>
+                    <strong>A couple of things to check.</strong>
+                    <p>Pause, ask questions, and verify independently.</p>
+                  </div>
+                </div>
+                <ul className="sample-checks">
+                  <li>
+                    <CircleAlert size={13} />
+                    An upfront payment request
+                  </li>
+                  <li>
+                    <CircleAlert size={13} />
+                    Pressure to make a quick decision
+                  </li>
+                </ul>
               </div>
+            </div>
+            <div className="floating-note">
+              <ShieldCheck size={23} />
+              <span>
+                <strong>You’re in control.</strong> Understand the signals before deciding.
+              </span>
             </div>
           </div>
         </div>
-
-        {/* --- CLAIM PROFILE / GO LIVE --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-40">
-          <div className="bg-indigo-600 dark:bg-white rounded-2xl p-10 shadow-2xl relative transition-colors">
-            <div className="w-16 h-16 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-8 border-4 border-indigo-400 dark:border-slate-100 transition-colors">
-              <ShieldCheck size={32} className="text-indigo-600 dark:text-cyan-400" />
-            </div>
-            <h3 className="text-4xl font-black text-white dark:text-slate-900 mb-4 leading-tight transition-colors">Claim Your Free Credify Company Profile</h3>
-            <p className="text-indigo-100 dark:text-slate-600 mb-12 transition-colors">Protect your employer brand from job scammers and show applicants your listings are 100% secure.</p>
-            <div className="absolute bottom-6 right-6 text-[10px] font-bold text-indigo-300 dark:text-slate-400 flex items-center gap-1 transition-colors">Made with Credify <Zap size={10}/></div>
-          </div>
-
-          <div className="space-y-12 pl-0 md:pl-8">
-            <div className="relative">
-              <div className="text-indigo-600 dark:text-cyan-500 font-black text-sm mb-2 transition-colors">01</div>
-              <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 transition-colors">Submit domain details</h4>
-              <p className="text-slate-600 dark:text-slate-400 transition-colors">Fill out the fast verification form with your official company email and domain records.</p>
-            </div>
-            <div className="relative">
-              <div className="text-indigo-600 dark:text-cyan-500 font-black text-sm mb-2 transition-colors">02</div>
-              <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 transition-colors">Manual review</h4>
-              <p className="text-slate-600 dark:text-slate-400 transition-colors">Our team checks domain ownership and company legitimacy within 24 hours.</p>
-            </div>
-            <div className="relative">
-              <div className="text-indigo-600 dark:text-cyan-500 font-black text-sm mb-2 transition-colors">03</div>
-              <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 transition-colors">Go live</h4>
-              <p className="text-slate-600 dark:text-slate-400 transition-colors">Your verification page publishes. Share the URL everywhere.</p>
-            </div>
-          </div>
+      </section>
+      <div className="container trust-strip">
+        <div>
+          <LockKeyhole size={18} />
+          Privacy-conscious by design
         </div>
-
-        {/* --- PRICING --- */}
-        <Pricing />
-
-        {/* --- FAQ & INTEGRATION --- */}
-        <FAQ />
-
+        <div>
+          <Eye size={19} />
+          Explanations you can understand
+        </div>
+        <div>
+          <BadgeHelp size={19} />
+          Clear about what we don’t know
+        </div>
       </div>
+      <section className="section container">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">
+              <span />A second look goes a long way
+            </p>
+            <h2>One less thing to wonder about.</h2>
+          </div>
+          <p>Simple checks for the messages and links that come with a job search.</p>
+        </div>
+        <div className="cards-grid">
+          {tools.map(({ icon: Icon, ...tool }) => (
+            <article className="feature-card" key={tool.title}>
+              <span className="feature-icon">
+                <Icon size={23} strokeWidth={1.6} />
+              </span>
+              <h3>{tool.title}</h3>
+              <p>{tool.description}</p>
+              <TextLink href={tool.href}>{tool.action}</TextLink>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="section how-section">
+        <div className="container">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">
+                <span />
+                From doubt to a next step
+              </p>
+              <h2>A little context. A lot more clarity.</h2>
+            </div>
+            <TextLink href="/how-it-works">Explore how it works</TextLink>
+          </div>
+          <div className="steps-grid">
+            {[
+              [
+                '01',
+                'Bring the question.',
+                'Paste the offer, email address, or link you’re unsure about. Leave out personal details that aren’t needed.',
+              ],
+              [
+                '02',
+                'Understand the signals.',
+                'Read the findings and why they matter. Every review explains the checks performed and their limitations.',
+              ],
+              [
+                '03',
+                'Choose your next move.',
+                'Use practical next steps to contact the employer independently, ask better questions, and make an informed decision.',
+              ],
+            ].map(([number, title, description]) => (
+              <div key={number}>
+                <span className="step-number">{number}</span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="section container split-section">
+        <div>
+          <p className="eyebrow">
+            <span />
+            Good questions deserve clear answers
+          </p>
+          <h2>
+            Trust starts with
+            <br />
+            <span className="serif">being transparent.</span>
+          </h2>
+          <p className="lead">
+            No magic safety score. No promise that a green check makes everything okay. Just useful
+            context, with the limitations in plain sight.
+          </p>
+          <TextLink href="/trustscore">Read our approach</TextLink>
+        </div>
+        <div className="faq-list">
+          {faqs.map(([question, answer]) => (
+            <details key={question}>
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+      <section className="container">
+        <div className="cta-panel">
+          <div>
+            <p className="eyebrow" style={{ marginBottom: 12 }}>
+              <Sparkles size={14} />
+              Your career. Your call.
+            </p>
+            <h2>Move forward with a little more clarity.</h2>
+            <p>Start with the offer that’s on your mind.</p>
+          </div>
+          <ButtonLink href="/job-scanner">
+            Check an offer <ArrowRight size={17} />
+          </ButtonLink>
+        </div>
+      </section>
     </main>
   );
 }

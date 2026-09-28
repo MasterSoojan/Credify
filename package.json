@@ -6,34 +6,44 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "next typegen && tsc --noEmit --incremental false",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
-    "@google-cloud/vision": "^5.3.5",
     "@google/genai": "^1.50.1",
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.103.3",
-    "bcryptjs": "^3.0.3",
-    "form-data": "^4.0.5",
     "lucide-react": "^1.8.0",
-    "mongoose": "^9.4.1",
-    "next": "16.2.4",
+    "next": "16.3.6",
     "next-themes": "^0.4.6",
-    "pdf-lib": "^1.17.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-markdown": "^10.1.0",
-    "supabase": "^2.92.1",
-    "whoiser": "^2.0.0-beta.10"
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@electric-sql/pglite": "^0.5.8",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20",
+    "@types/node": "^24.19.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.4",
+    "eslint-config-next": "16.3.6",
+    "prettier": "^3.9.9",
+    "supabase": "^2.118.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.2"
+  },
+  "engines": {
+    "node": ">=24 <27"
   }
 }

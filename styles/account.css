@@ -1,0 +1,186 @@
+/* Account forms reuse the same fields and API boundary as the rest of the application. */
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  padding-block: 72px 90px;
+  align-items: center;
+  min-height: 75vh;
+}
+.auth-story {
+  max-width: 460px;
+}
+.auth-story h1 {
+  font-size: 46px;
+  font-weight: 500;
+  margin: 25px 0;
+}
+.auth-story > p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.9;
+}
+.auth-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 25px 0;
+  max-width: 350px;
+}
+.auth-note svg {
+  color: var(--brand);
+}
+.auth-card {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 36px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.auth-card h2 {
+  font-size: 28px;
+  font-weight: 500;
+  margin: 15px 0 12px;
+}
+.auth-card .eyebrow {
+  font-size: 9px;
+}
+.auth-form {
+  margin-top: 26px;
+}
+.auth-switch {
+  border-top: 1px solid var(--line);
+  padding-top: 23px;
+  margin-top: 26px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.auth-switch a,
+.auth-form .field-hint a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.password-input {
+  position: relative;
+}
+.password-input input {
+  padding-right: 50px;
+}
+.password-input button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  height: 40px;
+  width: 40px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  border-radius: 5px;
+}
+.account-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 640px);
+  gap: 32px;
+}
+.account-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 25px;
+  background: var(--surface);
+  align-self: start;
+}
+.account-avatar {
+  background: var(--brand-soft);
+  color: var(--brand);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+}
+.account-nav strong {
+  overflow-wrap: anywhere;
+  font-size: 15px;
+}
+.account-nav p {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 5px 0 20px;
+  overflow-wrap: anywhere;
+}
+.account-nav a,
+.account-nav button {
+  background: transparent;
+  border: none;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 13px;
+}
+.account-nav [aria-current] {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.account-layout h2 {
+  font-size: 23px;
+  font-weight: 500;
+  margin-bottom: 9px;
+}
+.danger-zone summary {
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 14px;
+}
+.danger-zone form {
+  margin-top: 25px;
+}
+@media (max-width: 850px) {
+  .auth-layout {
+    gap: 40px;
+  }
+  .auth-card {
+    padding: 27px;
+  }
+  .auth-story h1 {
+    font-size: 36px;
+  }
+}
+@media (max-width: 650px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-block: 35px 50px;
+  }
+  .auth-story > p:not(.eyebrow),
+  .auth-story .auth-note,
+  .auth-story .button {
+    display: none;
+  }
+  .auth-story h1 {
+    font-size: 34px;
+    margin-bottom: 0;
+  }
+  .account-layout {
+    grid-template-columns: 1fr;
+  }
+  .account-nav {
+    padding: 20px;
+  }
+  .account-nav a,
+  .account-nav button {
+    min-height: 44px;
+  }
+}

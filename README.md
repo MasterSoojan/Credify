@@ -1,97 +1,62 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg" alt="Credify Logo" width="120" height="120" />
-  <h1>Credify</h1>
-  <p><strong>The Trust Infrastructure for Modern Hiring</strong></p>
+# Credify
 
-  <p>
-    <a href="#features">Features</a> •
-    <a href="#tech-stack">Tech Stack</a> •
-    <a href="#getting-started">Getting Started</a> •
-    <a href="#architecture">Architecture</a>
-  </p>
-</div>
+A thoughtful second look at a job offer. Credify helps people inspect offer text, recruiter email domains, and website addresses, with clear findings and practical next steps.
 
----
+**Basic checks work entirely in the browser, without an account or backend.** Optional account, company-registry, and AI services are explicitly enabled. Hosted Supabase is currently paused; nothing in the default setup resumes it.
 
-## 🛡️ The Trust Gap in Hiring
-**40% of candidates** ignore legitimate recruiter messages because they can't tell real from fake. **1 in 8** online job offers in Southeast Asia is fraudulent. 
+## Start here
 
-**Credify** is a dual-sided platform designed to eliminate the job scam epidemic. We provide defensive AI verification tools for candidates, and proactive identity infrastructure for legitimate employers.
+Use Node.js 24 (see `.nvmrc`) and npm.
 
----
+```bash
+npm ci
+cp .env.example .env.local
+npm run dev
+```
 
-## ✨ Core Features
+If `.env.local` already exists, preserve it and compare its variable names with the example instead of overwriting it. Leave the three `CREDIFY_*_ENABLED` flags false while hosted services are paused. Open [localhost:3000](http://localhost:3000).
 
-### For Candidates (B2C)
-*   🧠 **AI Job Scanner**: Upload a PDF offer letter or paste recruiter emails. Our Gemini 2.5 Flash AI performs forensic analysis to detect red flags and assigns a TrustScore.
-*   🔗 **Instant Verification**: Paste any URL to instantly cross-reference it against threat intelligence databases (ready for VirusTotal/Safe Browsing integration).
-*   📱 **GuardianDialer App**: An Android companion app that provides real-time alerts and smart call blocking for known fraudulent recruiter numbers.
-*   💻 **Chrome Extension (Beta)**: In-line verification that automatically scans and flags suspicious job offer emails directly inside your Gmail inbox.
-*   📰 **Live Threat Intelligence**: A dynamic feed of the latest cybersecurity and scam news fetched via the Dev.to API.
-*   🆘 **Emergency Guide**: Step-by-step actionable advice and copy-paste communication templates for victims who have already been compromised.
+Try `/demo` for a fictional offer using the real local analysis rules. `/job-scanner` supports text, email, and link checks. `/help-center` explains the checks and limitations. The interface supports light/dark themes, mobile layouts, keyboard navigation, and reduced-motion preferences. Fonts are local system fonts; builds do not download Google Fonts.
 
-### For Employers (B2B)
-*   🏢 **Verifiable Identity Links**: Companies get a permanent, verified URL (e.g., `credify.app/verify/acme-corp`).
-*   ⚡ **Instant Trust**: Candidates can click the link in a recruiter's email signature or LinkedIn InMail to instantly verify their legitimacy in under 5 seconds.
-*   🚫 **Impersonation Defense**: Dynamic TrustScore engine automatically flags scammers who attempt to copy the verified link onto fake domains.
+## What is implemented
 
----
+| Capability                | Behavior                                                                                                                                                             |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Offer text review         | Bounded, English-language pattern checks running on the device. Shows supporting excerpts and limitations.                                                           |
+| Email and link inspection | Parses the full written domain/hostname without authenticating the sender or visiting the submitted URL.                                                             |
+| Optional AI review        | Consent-based text/PDF/PNG/JPEG processing through Gemini; authenticated, rate-limited, capped, schema-validated, and time-bounded. Disabled by default.             |
+| Accounts                  | Supabase Auth with server-managed cookies, confirmation, login/logout, password recovery/change, profile editing, and authenticated deletion. Disabled while paused. |
+| Company registry          | Searches approved, unexpired public records. Legacy demo company rows remain pending. Disabled by default.                                                           |
+| Safety resources          | Practical guidance, fictional learning scenarios, transparent feature availability, and attributed external reading.                                                 |
+| Android preview           | Existing APK download retained with checksums; its source and behavior are outside this web repository’s verification.                                               |
 
-## 🛠️ Tech Stack
+There are no numeric safety probabilities, inbox scanning, real-time threat databases, paid subscriptions, stored scan histories, or self-service employer approval workflows. The browser extension and employer onboarding are explicitly described as planned. See [delivery status](docs/STATUS.md) for verification evidence and remaining deployment gates.
 
-*   **Frontend**: [Next.js 14](https://nextjs.org/) (App Router) with React
-*   **Styling**: Tailwind CSS & Vanilla CSS (Dark/Light mode support)
-*   **Icons**: [Lucide React](https://lucide.dev/)
-*   **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL & Row Level Security)
-*   **AI Engine**: Google AI Studio ([Gemini 2.5 Flash](https://aistudio.google.com/))
-*   **Upcoming Integrations**: VirusTotal API, Resend (Email Infrastructure)
+## Quality commands
 
----
+```bash
+npm run check          # lint, generated Next route types, TypeScript, unit/API/Postgres tests
+npm run build          # production compilation and prerendering
+npm run format:check   # consistent source and documentation formatting
+npx playwright install chromium
+npm run test:e2e       # local browser journeys, mobile checks, and axe accessibility checks
+```
 
-## 🚀 Getting Started
+Browser tests start a development server on port 3100 with hosted services disabled. Stop another Next dev server for this checkout first: Next uses a shared `.next/dev` lock. CI installs Chromium automatically. In constrained environments, `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can point to an already installed Chromium; it is optional, not a project requirement.
 
-### Prerequisites
-*   Node.js (v18+)
-*   A Supabase project
-*   A Google AI Studio (Gemini) API Key
+After building, run `PLAYWRIGHT_USE_PRODUCTION=true npm run test:e2e` to exercise the production server. CI uses this mode. Port 3100 must be free; the tests deliberately do not reuse a potentially connected development server.
 
-### Local Development
+`npm test` runs without Docker, Supabase credentials, Gemini calls, or a Redis service. SQL policy tests use embedded PostgreSQL through PGlite; they do not certify a hosted Supabase configuration. Provider integration tests use controlled doubles. See [testing](docs/TESTING.md).
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/credify.git
-   cd credify
-   ```
+## Work on the project
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+- [Architecture and design decisions](docs/ARCHITECTURE.md)
+- [Development and extension guide](docs/DEVELOPMENT.md)
+- [Environment, local Supabase, and deployment](docs/OPERATIONS.md)
+- [API contracts](docs/API.md)
+- [Security boundaries and data handling](docs/SECURITY.md)
+- [Testing and release checks](docs/TESTING.md)
+- [Delivery status and known limitations](docs/STATUS.md)
+- [Agent context](brain.md)
 
-3. **Set up Environment Variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   GEMINI_API_KEY=your_gemini_api_key
-   ```
-
-4. **Database Setup**
-   Run the SQL commands found in `supabase_setup.sql` in your Supabase SQL Editor to provision the necessary tables and RLS policies.
-
-5. **Start the Development Server**
-   ```bash
-   npm run dev
-   ```
-   Visit `http://localhost:3000` to see the application running.
-
----
-
-## 🔒 Security & Demo Notes
-*   **API Security**: All sensitive keys (Gemini, Supabase) are managed via `process.env`.
-*   **Mock Demo Experience**: For the current preview version, authentication and profile persistence are handled via a robust `localStorage` simulation. This allows for a full end-to-end demo (Signup -> Login -> Profile Edit -> Settings) without requiring a live database connection, ensuring immediate portability.
-*   **Data Protection**: User input is sanitized before processing through the Gemini AI forensic engine to prevent prompt injection.
-
-<div align="center">
-  <i>Building a safer internet, one job offer at a time.</i>
-</div>
+The stack is Next.js 16.3.6, React 19, TypeScript, Tailwind CSS 4, Supabase, and the Google GenAI SDK. Runtime versions are pinned or constrained in `package.json` and resolved in `package-lock.json`. Read the installed Next.js guides in `node_modules/next/dist/docs/` before changing framework integration; this project intentionally follows the APIs of its installed version.

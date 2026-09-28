@@ -1,30 +1,29 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '../../../lib/supabase';
+import { z } from 'zod';
+import { apiError, assertSameOrigin, json, readJson, ApiError } from '@/lib/http';
+import { emailSchema } from '@/lib/auth-schemas';
+import { createAuthClient } from '@/lib/supabase/server';
+import { getSiteUrl } from '@/lib/config';
+import { limitAuth } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
-    try {
-        const { email } = await request.json();
-
-        if (!email) {
-            return NextResponse.json({ message: 'Email is required' }, { status: 400 });
-        }
-
-        // Send reset password email using Supabase Auth
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/reset-password/update`,
-        });
-
-        if (error) {
-            console.error("Reset password error:", error);
-            return NextResponse.json({ message: error.message }, { status: 400 });
-        }
-
-        return NextResponse.json({
-            message: 'Password reset email sent successfully',
-        }, { status: 200 });
-
-    } catch (error: any) {
-        console.error("Reset password error:", error);
-        return NextResponse.json({ message: error.message || 'Internal Server Error' }, { status: 500 });
-    }
+  try {
+    assertSameOrigin(request);
+    const { email } = await readJson(request, z.object({ email: emailSchema }).strict());
+    const client = await createAuthClient();
+    await limitAuth(email, 'recovery');
+    const { error } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${getSiteUrl()}/reset-password/update`,
+    });
+    if (error)
+      throw new ApiError(
+        503,
+        'RECOVERY_UNAVAILABLE',
+        'We could not send a recovery email. Please try again later.',
+      );
+    return json({
+      message: 'If an account exists, a password reset link has been sent to its email address.',
+    });
+  } catch (error) {
+    return apiError(error);
+  }
 }

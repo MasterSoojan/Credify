@@ -1,7 +1,5 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
+# Dependencies and package-manager working files (keep package-lock.json)
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -10,32 +8,51 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# Next.js / TypeScript generated files
 /.next/
 /out/
+/next-env.d.ts
+*.tsbuildinfo
 
-# production
-/build
+# Build and tool caches
+/build/
+/dist/
+/.cache/
+/.turbo/
 
-# misc
-.DS_Store
-*.pem
+# Test output (keep test source and documentation screenshots)
+/coverage/
+/.nyc_output/
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
 
-# env files (can opt-in for committing if needed)
+# Environment and private credentials; only the sanitized root example is committed
 .env*
-.env.local
+!/.env.example
+*.pem
+*.key
+*.p12
+*.pfx
 
-# vercel
-.vercel
+# Local deployment and Supabase state (keep config, migrations, and email templates)
+/.vercel/
+/supabase/.temp/
+/supabase/.branches/
 
-# debug
-npm-debug.log*
-yarn-debug.log*
+# Runtime and package-manager logs
+*.log
+*.log.*
+
+# Local experiments and private review notes
 /scratch/
+/bugs_and_errors.txt
+/for_knowledge/
 
-# Security reports
-bugs_and_errors.txt
-for_knowledge/
+# OS/editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

@@ -1,50 +1,39 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '../../../lib/supabase';
+import { apiError, assertSameOrigin, json, readJson, ApiError } from '@/lib/http';
+import { signupSchema } from '@/lib/auth-schemas';
+import { createAuthClient } from '@/lib/supabase/server';
+import { getSiteUrl } from '@/lib/config';
+import { limitAuth } from '@/lib/rate-limit';
+import { throwForAuthServiceError } from '@/lib/auth/errors';
 
 export async function POST(request: Request) {
-    try {
-        const { email, password, backupEmail } = await request.json();
-
-        if (!email || !password) {
-            return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
-        }
-
-        // 1. Sign up with Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email,
-            password,
-        });
-
-        if (authError) {
-            console.error("Supabase Auth Signup error:", authError);
-            return NextResponse.json({ message: authError.message }, { status: 400 });
-        }
-
-        // 2. Generate a random User ID (e.g., credify_a1b2c3)
-        const userId = 'credify_' + Math.random().toString(36).substring(2, 8);
-
-        // 3. Store additional profile info in users_custom
-        const { error: insertError } = await supabase
-            .from('users_custom')
-            .insert([{ 
-                id: authData.user?.id,
-                email, 
-                user_id: userId, 
-                backup_email: backupEmail || null
-            }]);
-
-        if (insertError) {
-            console.error("Signup insert error:", insertError);
-            // Non-blocking error, user is already created in Auth
-        }
-
-        return NextResponse.json({
-            message: 'User created successfully',
-            user: { id: authData.user?.id, email, userId }
-        }, { status: 201 });
-
-    } catch (error: any) {
-        console.error("Signup error:", error);
-        return NextResponse.json({ message: error.message || 'Internal Server Error' }, { status: 500 });
-    }
+  try {
+    assertSameOrigin(request);
+    const input = await readJson(request, signupSchema);
+    const client = await createAuthClient();
+    await limitAuth(input.email, 'signup');
+    const { error } = await client.auth.signUp({
+      email: input.email,
+      password: input.password,
+      options: {
+        data: { display_name: input.name },
+        emailRedirectTo: `${getSiteUrl()}/auth/callback`,
+      },
+    });
+    throwForAuthServiceError(error);
+    if (error)
+      throw new ApiError(
+        400,
+        'SIGNUP_FAILED',
+        'We could not create an account. Check your details or try signing in.',
+      );
+    return json(
+      {
+        message:
+          'Check your email to confirm your account. If you already have an account, sign in or reset your password.',
+      },
+      201,
+    );
+  } catch (error) {
+    return apiError(error);
+  }
 }

@@ -1,0 +1,42 @@
+name: Quality
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CREDIFY_AUTH_ENABLED: 'false'
+      CREDIFY_AI_ENABLED: 'false'
+      CREDIFY_REGISTRY_ENABLED: 'false'
+      SITE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run check
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+        env:
+          PLAYWRIGHT_USE_PRODUCTION: 'true'
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: browser-failure-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

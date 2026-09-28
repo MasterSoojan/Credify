@@ -1,36 +1,36 @@
-import type { Metadata } from "next";
-// Load Inter font from Google Fonts for typography
-import { Inter } from "next/font/google"; 
-import "./globals.css"; // Global styles and Tailwind configuration
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer"; 
-import { ThemeProvider } from "../components/ThemeProvider";
-// Initialize the Inter font with latin subset
-const inter = Inter({ subsets: ["latin"] });
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
-// Global metadata configuration for SEO and page headers
 export const metadata: Metadata = {
-  title: "Credify - Digital Defense for Job Seekers",
-  description: "Detect fake placement offers instantly.",
+  title: {
+    default: 'Credify — Your next opportunity. A little more clarity.',
+    template: '%s · Credify',
+  },
+  description:
+    'Take a closer look at a job offer, recruiter email, or link. Understand the signals, know the limitations, and find your next step.',
+};
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f8faf7' },
+    { media: '(prefers-color-scheme: dark)', color: '#111b18' },
+  ],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-slate-50 dark:bg-[#0A0F1C] text-slate-900 dark:text-slate-200 antialiased min-h-screen pt-20 flex flex-col transition-colors duration-300`}>
+      <body>
         <ThemeProvider>
+          <a href="#main-content" className="skip-link">
+            Skip to content
+          </a>
           <Navbar />
-          
-          {/* Your page content (like the Employers page) loads here */}
-          <div className="flex-grow">
+          <div id="main-content" tabIndex={-1}>
             {children}
           </div>
-
-          {/* The Footer stays at the very bottom of every page! */}
           <Footer />
         </ThemeProvider>
       </body>

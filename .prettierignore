@@ -1,0 +1,12 @@
+node_modules
+.next
+package-lock.json
+next-env.d.ts
+AGENTS.md
+CLAUDE.md
+public
+scratch
+supabase/.temp
+playwright-report
+test-results
+*.tsbuildinfo

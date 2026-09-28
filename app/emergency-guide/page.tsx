@@ -1,84 +1,97 @@
-import Link from 'next/link';
-import { ArrowLeft, AlertTriangle, Phone, ShieldAlert, CreditCard } from 'lucide-react';
-
+import type { Metadata } from 'next';
+import { InformationPage } from '@/components/InformationPage';
+import { Notice } from '@/components/ui';
+export const metadata: Metadata = { title: 'Your next steps after a suspected scam' };
 export default function EmergencyGuidePage() {
   return (
-    <main className='min-h-screen pt-32 pb-20 px-6 max-w-3xl mx-auto text-slate-900 dark:text-slate-200'>
-      <Link href='/' className='flex items-center gap-2 text-sm font-bold text-indigo-600 dark:text-cyan-400 mb-8 w-fit hover:opacity-80 transition-opacity'>
-        <ArrowLeft size={16} /> Back to Home
-      </Link>
-      
-      <div className="flex items-center gap-3 mb-6">
-        <AlertTriangle size={32} className="text-rose-600 dark:text-rose-500" />
-        <h1 className='text-4xl md:text-5xl font-black'>Emergency Guide</h1>
-      </div>
-      
-      <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 leading-relaxed">
-        If you suspect you have been targeted by a job scam, or have already sent money/personal information to a fake recruiter, follow these steps immediately to protect yourself.
+    <InformationPage
+      eyebrow="Start with one next step"
+      title="You still have options."
+      description="If you have shared money or personal information, focus on practical actions. You do not need a Credify account to use this guide."
+    >
+      <Notice tone="warning" title="If you are in immediate danger">
+        Contact your local emergency services. Credify does not monitor reports or provide emergency
+        assistance.
+      </Notice>
+      <section className="prose-section">
+        <h2>If you sent money</h2>
+        <p>
+          Contact your bank, card issuer, or payment provider promptly using its official app or a
+          number you find independently. Explain what happened and ask whether the payment can be
+          stopped or reversed. Recovery is not guaranteed.
+        </p>
+        <p>
+          Keep payment references and receipts. The{' '}
+          <a
+            href="https://consumer.ftc.gov/articles/what-do-if-you-were-scammed"
+            target="_blank"
+            rel="noreferrer"
+          >
+            FTC’s recovery guide
+          </a>{' '}
+          explains options by payment method, primarily for people in the United States.
+        </p>
+      </section>
+      <section className="prose-section">
+        <h2>If you shared a password</h2>
+        <p>
+          Change it through the service’s official website or app. Change it on other accounts where
+          you reused it, enable multi-factor authentication where available, and review active
+          sessions. If someone gained access to your device, seek help through a trusted support
+          channel.
+        </p>
+      </section>
+      <section className="prose-section">
+        <h2>If you shared identity information</h2>
+        <p>
+          Contact the issuer of the affected document or the relevant identity-protection authority
+          in your country. For U.S. identity-theft guidance, visit{' '}
+          <a href="https://www.identitytheft.gov/" target="_blank" rel="noreferrer">
+            IdentityTheft.gov
+          </a>
+          . The right process depends on what you shared and where you live.
+        </p>
+      </section>
+      <section className="prose-section">
+        <h2>Keep a clear record</h2>
+        <ul>
+          <li>Save the original messages, email headers, offer documents, and account names.</li>
+          <li>Write down dates, transaction references, and the steps you have already taken.</li>
+          <li>Report the listing to the job platform through its official reporting flow.</li>
+          <li>
+            Use your country’s official consumer-protection or cybercrime reporting service. U.S.
+            users can use{' '}
+            <a href="https://reportfraud.ftc.gov/" target="_blank" rel="noreferrer">
+              ReportFraud.ftc.gov
+            </a>
+            .
+          </li>
+        </ul>
+      </section>
+      <section className="prose-section">
+        <h2>A starting message for your payment provider</h2>
+        <p>
+          Adapt this with only the details the provider needs, and send it through an official
+          channel:
+        </p>
+        <blockquote className="template-copy">
+          I believe I was misled into making a payment connected to a job offer. The payment date
+          was [date], the amount was [amount], and the reference was [reference]. Please tell me
+          whether it can be stopped or reversed and what evidence you need from me.
+        </blockquote>
+      </section>
+      <p className="small muted" style={{ marginTop: 25 }}>
+        Reviewed September 27, 2026. Source:{' '}
+        <a
+          className="text-link"
+          href="https://consumer.ftc.gov/articles/what-do-if-you-were-scammed"
+          target="_blank"
+          rel="noreferrer"
+        >
+          FTC consumer guidance
+        </a>
+        . Procedures vary by location and provider.
       </p>
-
-      <div className="space-y-8">
-        
-        <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-2xl p-6 md:p-8">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-rose-700 dark:text-rose-400 mb-4">
-            <CreditCard size={20} /> 1. Stop All Payments
-          </h2>
-          <ul className="list-disc pl-5 space-y-2 text-slate-700 dark:text-slate-300">
-            <li>Do not send any more money. Scammers often claim you need to pay a "processing fee" or "tax" to get your money back. It is a lie.</li>
-            <li>If you paid via credit/debit card, contact your bank immediately and request a chargeback for fraud.</li>
-            <li>If you sent crypto or gift cards, the money is likely gone, but you should still report it to the platform.</li>
-          </ul>
-        </div>
-
-        <div className="bg-indigo-50 dark:bg-cyan-950/20 border border-indigo-100 dark:border-cyan-900/50 rounded-2xl p-6 md:p-8">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-indigo-700 dark:text-cyan-400 mb-4">
-            <ShieldAlert size={20} /> 2. Secure Your Identity
-          </h2>
-          <ul className="list-disc pl-5 space-y-2 text-slate-700 dark:text-slate-300">
-            <li>If you provided your ID (passport, driver's license), contact your local authorities to report identity theft.</li>
-            <li>If you gave them your passwords, change them immediately on all accounts that use the same password. Enable 2FA (Two-Factor Authentication).</li>
-            <li>Freeze your credit. Contact major credit bureaus to place a freeze on your credit report to stop scammers from opening loans in your name.</li>
-          </ul>
-        </div>
-
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-6 md:p-8">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-amber-800 dark:text-amber-400 mb-4">
-            <AlertTriangle size={20} /> 4. Communication Templates
-          </h2>
-          <p className="text-slate-700 dark:text-slate-300 mb-4 text-sm">Use these templates to notify your bank and the real company immediately:</p>
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-slate-950 p-4 rounded-xl border border-amber-100 dark:border-amber-900/30">
-              <h3 className="text-xs font-bold uppercase text-amber-600 dark:text-amber-500 mb-2">To Your Bank</h3>
-              <p className="text-sm font-mono text-slate-600 dark:text-slate-400">"I have been the victim of a fraudulent job scam. On [Date], I authorized a transaction of [Amount] under false pretenses. I urgently request a freeze on my account and wish to file a fraud chargeback dispute for this transaction."</p>
-            </div>
-            <div className="bg-white dark:bg-slate-950 p-4 rounded-xl border border-amber-100 dark:border-amber-900/30">
-              <h3 className="text-xs font-bold uppercase text-amber-600 dark:text-amber-500 mb-2">To The Real Company (via their official site)</h3>
-              <p className="text-sm font-mono text-slate-600 dark:text-slate-400">"I am writing to report that someone is impersonating your HR department. They contacted me from [Fake Email/Number] offering a job at [Company Name]. I wanted to bring this to your security team's attention."</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 md:p-8">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mb-4">
-            <Phone size={20} /> 5. Report the Scam
-          </h2>
-          <ul className="list-disc pl-5 space-y-2 text-slate-700 dark:text-slate-300">
-            <li>Report the fraudulent job posting to the platform where you found it (e.g., LinkedIn, Indeed, Telegram).</li>
-            <li>File a report with your national cybercrime reporting center (e.g., IC3 in the US, Action Fraud in the UK, or the equivalent cyber police portal in your country).</li>
-            <li>Warn others by submitting the scam details to the Credify intelligence database.</li>
-          </ul>
-        </div>
-        
-        <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-6 md:p-8">
-          <h2 className="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-2">
-            Remember: You Are Not Alone
-          </h2>
-          <p className="text-slate-700 dark:text-slate-300 text-sm">
-            Job scams are highly sophisticated operations run by professional syndicates. They prey on the stress of job hunting. Do not blame yourself. Talk to a trusted friend or family member, and consider reaching out to local victim support services if you are feeling overwhelmed.
-          </p>
-        </div>
-
-      </div>
-    </main>
+    </InformationPage>
   );
 }

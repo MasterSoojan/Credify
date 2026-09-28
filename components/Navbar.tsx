@@ -1,36 +1,95 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { ShieldCheck } from 'lucide-react';
-import DesktopMenu from './navbar/DesktopMenu';
-import MobileMenu from './navbar/MobileMenu';
-import UserActions from './navbar/UserActions';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useTheme } from 'next-themes';
+import { ArrowUpRight, Menu, Moon, ShieldCheck, Sun, X } from 'lucide-react';
+
+const navigation = [
+  { href: '/job-scanner', label: 'Check an offer' },
+  { href: '/how-it-works', label: 'How it works' },
+  { href: '/help-center', label: 'Safety hub' },
+  { href: '/employers', label: 'For employers' },
+];
 
 export default function Navbar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
+  const menuButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        menuButton.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [open]);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 border-b border-black/5 dark:border-white/5 bg-white/70 dark:bg-slate-950/60 backdrop-blur-md transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        
-        {/* Left: Logo (Acts as Home Button) */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <ShieldCheck size={28} className="text-indigo-600 dark:text-cyan-400 group-hover:text-indigo-500 dark:group-hover:text-cyan-300 transition-colors" />
-          <span className="font-black text-2xl tracking-tighter text-slate-900 dark:text-white">
-            Credify.
+    <header className="site-header">
+      <div className="header-inner">
+        <Link href="/" className="brand" aria-label="Credify home" onClick={() => setOpen(false)}>
+          <span className="brand-mark">
+            <ShieldCheck size={23} strokeWidth={1.8} />
           </span>
+          credify<span className="brand-dot">.</span>
         </Link>
-
-        {/* Center: Desktop Navigation */}
-        <DesktopMenu />
-
-        {/* Right: Actions & Mobile Toggle */}
-        <div className="flex items-center gap-3">
-          <UserActions />
-          <MobileMenu isOpen={isMobileMenuOpen} setIsOpen={setIsMobileMenuOpen} />
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {navigation.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={pathname === item.href ? 'page' : undefined}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="header-actions">
+          <button
+            className="icon-button theme-toggle"
+            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            aria-label="Toggle color theme"
+          >
+            <Sun className="sun-icon" size={19} />
+            <Moon className="moon-icon" size={19} />
+          </button>
+          <Link className="header-signin" href="/profile">
+            My account <ArrowUpRight size={15} aria-hidden="true" />
+          </Link>
+          <button
+            ref={menuButton}
+            className="icon-button mobile-menu-toggle"
+            aria-label={open ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </div>
-    </nav>
+      {open && (
+        <nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation">
+          {[...navigation, { href: '/profile', label: 'My account' }].map((item) => (
+            <Link
+              href={item.href}
+              key={item.href}
+              aria-current={pathname === item.href ? 'page' : undefined}
+              onClick={() => setOpen(false)}
+            >
+              {item.label}
+              <ArrowUpRight size={17} aria-hidden="true" />
+            </Link>
+          ))}
+        </nav>
+      )}
+    </header>
   );
 }
